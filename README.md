@@ -8,3 +8,11 @@ Some of those are:
 * Amazon fun staff, like ECS, Cloudformation, DynamoDB, SNS, etc
 * Sonar Online service
 * Build a CICD pipeline in the cloud
+
+
+##### sonar analysis
+To run static analysis in Sonar OnLine execute:
+./gradlew sonarqube \
+  -Dsonar.organization=red-wine \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login={key}
