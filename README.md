@@ -11,6 +11,8 @@ Some of those are:
 
 
 ##### sonar analysis
+https://sonarcloud.io/organizations/red-wine/projects
+
 To run static analysis in Sonar OnLine execute:
 ./gradlew sonarqube \
   -Dsonar.organization=red-wine \
