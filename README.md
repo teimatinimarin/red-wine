@@ -18,3 +18,14 @@ To run static analysis in Sonar OnLine execute:
   -Dsonar.organization=red-wine \
   -Dsonar.host.url=https://sonarcloud.io \
   -Dsonar.login={key}
+  
+  
+#### libraries used in this project
+* [Tyrus] (https://tyrus-project.github.io/)
+* [Log4J2] (https://logging.apache.org/log4j/2.x/)
+* [JAckson] (https://github.com/FasterXML/jackson)
+
+#### Gradle plugins used in this project
+* java
+* org.gradle.java.experimental-jigsaw to support JAVA 9 modules
+* org.sonarqube to run Static Analysis
