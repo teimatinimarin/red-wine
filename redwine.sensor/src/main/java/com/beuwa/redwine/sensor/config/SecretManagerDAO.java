@@ -1,14 +1,9 @@
-package com.beuwa.redwine.sensor.dao;
+package com.beuwa.redwine.sensor.config;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.StringReader;
 
 public class SecretManagerDAO {
     public static void main(String[] args) {
