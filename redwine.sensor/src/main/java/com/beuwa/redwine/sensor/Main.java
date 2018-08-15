@@ -1,5 +1,7 @@
 package com.beuwa.redwine.sensor;
 
+import com.beuwa.redwine.sensor.config.Properties;
+import com.beuwa.redwine.sensor.config.PropertiesFacade;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.tyrus.client.ClientManager;
@@ -31,10 +33,12 @@ public class Main {
 
     public static void main(String[] args) {
         CountDownLatch latch = new CountDownLatch(1);
+        Properties properties = PropertiesFacade.retrieveProperties();
 
         ClientManager client = ClientManager.createClient();
         try {
-            client.connectToServer(Main.class, new URI("wss://www.bitmex.com/realtime?subscribe=liquidation:XBTUSD,quote:XBTUSD,quoteBin1m:XBTUSD,quoteBin5m:XBTUSD,quoteBin1d:XBTUSD,tradeBin5m:XBTUSD"));
+            URI uri = Main.getEndpoint(properties);
+            client.connectToServer(Main.class, uri);
             latch.await();
 
         } catch (DeploymentException | URISyntaxException | IOException e) {
@@ -43,6 +47,17 @@ public class Main {
             Thread.currentThread().interrupt();
             LOGGER.error("Interrupting the Thread. {}", e);
         }
+    }
+
+    private static URI getEndpoint(Properties properties) throws URISyntaxException{
+        String protocol = "wss";
+        String host = properties.getEndpoint();
+        int port = -1;
+        String path = "/realtime";
+        String query = "subscribe=liquidation:XBTUSD,quote:XBTUSD,quoteBin1m:XBTUSD,quoteBin5m:XBTUSD,quoteBin1d:XBTUSD,tradeBin5m:XBTUSD";
+        String auth = null;
+        String fragment = null;
+        return new URI(protocol, auth, host, port, path, query, fragment);
     }
 }
 
