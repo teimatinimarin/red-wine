@@ -6,7 +6,8 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 public class SecretManagerDAO {
-    public static void main(String[] args) {
+    private static final String ENV = System.getProperty("ENVIRONMENT", "test");
+    public static String retrieveSecrets() {
         SecretsManagerClient smClient = SecretsManagerClient.builder()
                 .region(Region.EU_WEST_1)
                 .build();
@@ -14,11 +15,9 @@ public class SecretManagerDAO {
         // In case of Certificate Issues, see
         // https://stackoverflow.com/questions/6784463/error-trustanchors-parameter-must-be-non-empty/30699960#30699960
         GetSecretValueResponse response = smClient.getSecretValue( GetSecretValueRequest.builder()
-                .secretId("test")
+                .secretId( ENV )
                 .build() );
 
-        JsonReader jsonReader = Json.createReader( new StringReader(response.secretString()) );
-        JsonObject jsonObject = jsonReader.readObject();
-        System.out.println( jsonObject.getString("endpoint") );
+        return response.secretString();
     }
 }
