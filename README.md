@@ -14,6 +14,12 @@ Some of those are:
 https://sonarcloud.io/organizations/red-wine/projects
 
 To run static analysis in Sonar OnLine execute:
+mvn sonar:sonar \
+  -Dsonar.organization=red-wine \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login={key}
+
+Gradle is not in use in this project be the moment...
 ./gradlew sonarqube \
   -Dsonar.organization=red-wine \
   -Dsonar.host.url=https://sonarcloud.io \
@@ -23,9 +29,7 @@ To run static analysis in Sonar OnLine execute:
 #### libraries used in this project
 * [Tyrus] (https://tyrus-project.github.io/)
 * [Log4J2] (https://logging.apache.org/log4j/2.x/)
-* [JAckson] (https://github.com/FasterXML/jackson)
+* [Jackson] (https://github.com/FasterXML/jackson)
 
-#### Gradle plugins used in this project
-* java
-* org.gradle.java.experimental-jigsaw to support JAVA 9 modules
+#### Maven plugins used in this project
 * org.sonarqube to run Static Analysis
