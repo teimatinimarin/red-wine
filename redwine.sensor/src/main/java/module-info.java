@@ -15,6 +15,7 @@ module redwine.sensor {
     requires regions;
 
     exports com.beuwa.redwine.sensor;
-    opens com.beuwa.redwine.sensor.config;
 
+    opens com.beuwa.redwine.sensor;
+    opens com.beuwa.redwine.sensor.config;
 }

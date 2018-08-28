@@ -7,6 +7,10 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 
 public class SecretManagerDAO {
     private static final String ENV = System.getProperty("ENVIRONMENT", "test");
+
+    private SecretManagerDAO() {
+    }
+
     public static String retrieveSecrets() {
         SecretsManagerClient smClient = SecretsManagerClient.builder()
                 .region(Region.EU_WEST_1)
