@@ -5,11 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PropertiesFactoryTest {
-
     @Test
     void createProperties() {
-        String secrets = "{\"endpoint\":\"endpoint\",\"trading\":\"trading\",\"open_email\":\"open_email\",\"close_email\":\"close_email\",\"api_key\":\"api_key\",\"api_secret\":\"api_secret\",\"leverage\":\"leverage\",\"max_invest\":\"max_invest\"}";
-        Properties properties = PropertiesFactory.createProperties(secrets);
+        Properties properties = PropertiesFactory.createProperties( Contants.secrets );
 
         assertEquals("endpoint", properties.getEndpoint());
         assertEquals("api_key", properties.getApiKey());
