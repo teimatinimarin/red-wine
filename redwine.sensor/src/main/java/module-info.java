@@ -1,4 +1,9 @@
 module redwine.sensor {
+    // WebBeans
+    requires cdi.api;
+    requires javax.inject;
+    requires java.annotation;
+
     // JSON
     requires org.glassfish.java.json;
 
@@ -14,8 +19,12 @@ module redwine.sensor {
     requires secretsmanager;
     requires regions;
 
-    exports com.beuwa.redwine.sensor;
+    exports com.beuwa.redwine.sensor.app to tyrus.core;
 
+    // Temporal for junit in intellij
     opens com.beuwa.redwine.sensor;
+    opens com.beuwa.redwine.sensor.app;
     opens com.beuwa.redwine.sensor.config;
+    opens com.beuwa.redwine.sensor.events;
+    opens com.beuwa.redwine.sensor.producers;
 }

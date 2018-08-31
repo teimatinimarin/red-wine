@@ -1,15 +1,25 @@
 package com.beuwa.redwine.sensor.config;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+@Default
 public class PropertiesFacade {
+    @Inject
+    private SecretManagerDAO secretManagerDao;
+
+    @Inject
+    private PropertiesFactory propertiesFactory;
+
     private Properties properties;
 
-    public PropertiesFacade() {
-        super();
-        //String secrets = SecretManagerDAO.retrieveSecrets();
-        //properties = PropertiesFactory.createProperties(secrets);
+    @PostConstruct
+    public void init() {
+        String secrets = secretManagerDao.retrieveSecrets();
+        properties = propertiesFactory.createProperties(secrets);
     }
 
     public URI buildEndpoint() throws URISyntaxException {

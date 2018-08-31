@@ -1,13 +1,20 @@
 package com.beuwa.redwine.sensor.config;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class PropertiesFactoryTest {
+    @InjectMocks
+    PropertiesFactory propertiesFactory;
+
     @Test
     void createProperties() {
-        Properties properties = PropertiesFactory.createProperties( Contants.secrets );
+        Properties properties = propertiesFactory.createProperties( Contants.secrets );
 
         assertEquals("endpoint", properties.getEndpoint());
         assertEquals("api_key", properties.getApiKey());

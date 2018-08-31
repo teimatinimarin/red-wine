@@ -6,10 +6,7 @@ import javax.json.JsonReader;
 import java.io.StringReader;
 
 public class PropertiesFactory {
-    private PropertiesFactory() {
-    }
-
-    public static Properties createProperties(String secrets) {
+    public  Properties createProperties(String secrets) {
         try(JsonReader jsonReader = Json.createReader( new StringReader(secrets) )) {
             JsonObject jsonObject = jsonReader.readObject();
 
