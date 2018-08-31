@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(MockitoExtension.class)
 class PropertiesFacadeTest {
     @InjectMocks
@@ -21,6 +23,10 @@ class PropertiesFacadeTest {
     void getEndpoint() throws Exception {
         Mockito.when(properties.getEndpoint()).thenReturn( "domain.com" );
         URI uri = propertiesFacade.buildEndpoint();
-        System.out.println(uri);
+
+        assertEquals(
+                "wss://domain.com/realtime?subscribe=liquidation:XBTUSD,quote:XBTUSD,quoteBin1m:XBTUSD,quoteBin5m:XBTUSD,quoteBin1d:XBTUSD,tradeBin5m:XBTUSD",
+                uri.toString()
+        );
     }
 }

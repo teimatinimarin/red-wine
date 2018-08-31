@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.beuwa</groupId>
-        <artifactId>red-wine</artifactId>
+        <artifactId>redwine</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -24,6 +24,31 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <!-- Inject, Named, Qualifier, Scope, Singleton -->
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <!-- Generated, ManagedBean, PostConstruct, PreDestroy, Priority, Resource, Resources -->
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-se</artifactId>
+            <version>2.0.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>javax.json</groupId>
             <artifactId>javax.json-api</artifactId>
@@ -88,5 +113,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

@@ -1,35 +1,29 @@
 package com.beuwa.redwine.sensor;
 
-import com.beuwa.redwine.sensor.config.PropertiesFacade;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.glassfish.tyrus.client.ClientManager;
+import com.beuwa.redwine.sensor.events.BootEvent;
 
-import javax.websocket.DeploymentException;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.CountDownLatch;
-
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
 
 public class Main {
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static void main(final String[] args) {
+        // newInstance() looks up a META-INF service that implements the
+        // SeContainerInitializer interface and loads that.
+        // There can only be one.
+        SeContainer seContainer = SeContainerInitializer.newInstance()
+                // This JAR (bean-archive.jar) contains an empty beans.xml in the resources,
+                // so the CDI container will find beans from it.
+                // But if you have JARs that are not marked as bean archives,
+                // you could add some of their packages to the container and
+                // treat all those (CDI compatible POJOs) as beans:
+                //.addPackages(Foo.class.getPackage())
+                .initialize();
 
-    public static void main(String[] args) {
-        CountDownLatch latch = new CountDownLatch(1);
 
-        PropertiesFacade propertiesFacade = new PropertiesFacade();
-        ClientManager client = ClientManager.createClient();
-        try {
-            URI uri = propertiesFacade.buildEndpoint();
-            client.connectToServer(WebClientListener.class, uri);
-            latch.await();
-        } catch (DeploymentException | URISyntaxException | IOException e) {
-            LOGGER.error("OOOPS! {}");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            LOGGER.error("Interrupting the Thread. {}", e);
-        }
+        // Fire synchronous event that triggers the code in App class.
+        seContainer.getBeanManager().fireEvent(new BootEvent());
+
+        seContainer.close();
     }
 }
 
