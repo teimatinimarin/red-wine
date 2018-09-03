@@ -3,10 +3,12 @@ package com.beuwa.redwine.sensor.config;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 @Default
+@Singleton
 public class PropertiesFacade {
     @Inject
     private SecretManagerDAO secretManagerDao;
@@ -27,9 +29,17 @@ public class PropertiesFacade {
         String host = properties.getEndpoint();
         int port = -1;
         String path = "/realtime";
-        String query = "subscribe=liquidation:XBTUSD,quote:XBTUSD,quoteBin1m:XBTUSD,quoteBin5m:XBTUSD,quoteBin1d:XBTUSD,tradeBin5m:XBTUSD";
+        String query = null;
         String auth = null;
         String fragment = null;
         return new URI(protocol, auth, host, port, path, query, fragment);
+    }
+
+    public String getApiKey() {
+        return properties.getApiKey();
+    }
+
+    public String getApiSecret() {
+        return properties.getApiSecret();
     }
 }

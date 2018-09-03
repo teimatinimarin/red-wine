@@ -7,7 +7,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import javax.inject.Inject;
 
 public class SecretManagerDAO {
-    private static final String ENV = System.getProperty("ENVIRONMENT", "test");
+    private static final String ENV = System.getProperty("ENVIRONMENT", "prod");
 
     @Inject
     SecretsManagerClient smClient;
@@ -15,9 +15,11 @@ public class SecretManagerDAO {
     public String retrieveSecrets() {
         // In case of Certificate Issues, see
         // https://stackoverflow.com/questions/6784463/error-trustanchors-parameter-must-be-non-empty/30699960#30699960
-        GetSecretValueResponse response = smClient.getSecretValue( GetSecretValueRequest.builder()
+        GetSecretValueResponse response = smClient.getSecretValue(
+                GetSecretValueRequest.builder()
                 .secretId( ENV )
-                .build() );
+                .build()
+        );
 
         return response.secretString();
     }
