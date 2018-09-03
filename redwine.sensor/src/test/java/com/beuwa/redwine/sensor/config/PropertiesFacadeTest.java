@@ -25,7 +25,7 @@ class PropertiesFacadeTest {
         URI uri = propertiesFacade.buildEndpoint();
 
         assertEquals(
-                "wss://domain.com/realtime?subscribe=liquidation:XBTUSD,quote:XBTUSD,quoteBin1m:XBTUSD,quoteBin5m:XBTUSD,quoteBin1d:XBTUSD,tradeBin5m:XBTUSD",
+                "wss://domain.com/realtime",
                 uri.toString()
         );
     }
