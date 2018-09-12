@@ -2,10 +2,15 @@ package com.beuwa.redwine.sensor.app;
 
 import com.beuwa.redwine.sensor.config.PropertiesFacade;
 import com.beuwa.redwine.sensor.utils.Signer;
+import com.beuwa.redwine.sensor.utils.SubscribeUtils;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.websocket.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
 
@@ -20,8 +25,14 @@ public class WebClientListener {
     @Inject
     Signer signer;
 
+    @Inject
+    MessageProcessor messageProcessor;
+
+    @Inject
+    SubscribeUtils subscribeUtils;
+
     @OnOpen
-    public void onOpen(Session session) throws Exception {
+    public void onOpen(Session session) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         logger.info("Connected");
         String key = propertiesFacade.getApiKey();
 
@@ -36,12 +47,15 @@ public class WebClientListener {
                 signature);
         session.getBasicRemote().sendText(auth);
 
-        session.getBasicRemote().sendText("{\"op\": \"subscribe\", \"args\": [\"wallet\",\"position\", \"quote:XBTUSD\"]}");
+        String subscribeTemplate = "{\"op\": \"subscribe\", \"args\": [%s]}";
+        String subscribe = String.format(subscribeTemplate, subscribeUtils.getSubscribeString());
+        session.getBasicRemote().sendText(subscribe);
     }
 
     @OnMessage
     public void onMessage(String message) {
         logger.info(message);
+        messageProcessor.process(message);
     }
 
     @OnClose

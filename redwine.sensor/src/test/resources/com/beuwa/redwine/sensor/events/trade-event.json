@@ -1,0 +1,1 @@
+{"table":"trade","action":"insert","data":[{"timestamp":"2018-09-12T14:06:37.211Z","symbol":"XBTUSD","side":"Buy","size":292,"price":6268.5,"tickDirection":"ZeroPlusTick","trdMatchID":"cef63176-c2b8-d343-690c-37c48fc9d190","grossValue":4658276,"homeNotional":0.04658276,"foreignNotional":292}]}

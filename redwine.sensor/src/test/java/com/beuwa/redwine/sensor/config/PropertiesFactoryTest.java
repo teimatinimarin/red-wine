@@ -1,7 +1,8 @@
 package com.beuwa.redwine.sensor.config;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -12,9 +13,10 @@ class PropertiesFactoryTest {
     @InjectMocks
     PropertiesFactory propertiesFactory;
 
-    @Test
-    void createProperties() {
-        Properties properties = propertiesFactory.createProperties( Contants.secrets );
+    @ParameterizedTest
+    @CsvFileSource(resources = "secrets.json",delimiter = '^')
+    void createProperties(String secrets) {
+        Properties properties = propertiesFactory.createProperties( secrets );
 
         assertEquals("endpoint", properties.getEndpoint());
         assertEquals("api_key", properties.getApiKey());
@@ -24,5 +26,12 @@ class PropertiesFactoryTest {
         assertEquals("open_email", properties.getNotifyOpen());
         assertEquals("close_email", properties.getNotifyClose());
         assertEquals("max_invest", properties.getMaxInvest());
+        assertEquals(true, properties.isEventInstrumentEnable());
+        assertEquals(true, properties.isEventLiquidationEnable());
+        assertEquals(true, properties.isEventOrderEnable());
+        assertEquals(true, properties.isEventPositionEnable());
+        assertEquals(true, properties.isEventQuoteEnable());
+        assertEquals(true, properties.isEventTradeEnable());
+        assertEquals(true, properties.isEventWalletEnable());
     }
 }

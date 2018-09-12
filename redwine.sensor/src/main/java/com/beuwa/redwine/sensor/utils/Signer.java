@@ -5,6 +5,9 @@ import com.beuwa.redwine.sensor.config.PropertiesFacade;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public class Signer {
     private static final String CHARSET = "UTF-8";
@@ -14,7 +17,7 @@ public class Signer {
     @Inject
     private PropertiesFacade propertiesFacade;
 
-    public String encode(String verb, String path, long expires, String data) throws Exception {
+    public String encode(String verb, String path, long expires, String data) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         String key = propertiesFacade.getApiSecret();
 
         byte[] bytes = key.getBytes(CHARSET);

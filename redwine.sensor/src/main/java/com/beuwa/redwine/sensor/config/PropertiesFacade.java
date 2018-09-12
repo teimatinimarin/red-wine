@@ -42,4 +42,32 @@ public class PropertiesFacade {
     public String getApiSecret() {
         return properties.getApiSecret();
     }
+
+    public boolean isEventInstrumentEnable() {
+        return properties.isEventInstrumentEnable();
+    }
+
+    public boolean isEventLiquidationEnable() {
+        return properties.isEventLiquidationEnable();
+    }
+
+    public boolean isEventOrderEnable() {
+        return properties.isEventOrderEnable();
+    }
+
+    public boolean isEventPositionEnable() {
+        return properties.isEventPositionEnable();
+    }
+
+    public boolean isEventQuoteEnable() {
+        return properties.isEventQuoteEnable();
+    }
+
+    public boolean isEventTradeEnable() {
+        return properties.isEventTradeEnable();
+    }
+
+    public boolean isEventWalletEnable() {
+        return properties.isEventWalletEnable();
+    }
 }
