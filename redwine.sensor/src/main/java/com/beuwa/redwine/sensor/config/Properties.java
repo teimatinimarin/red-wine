@@ -9,8 +9,18 @@ public class Properties {
     private String notifyOpen;
     private String notifyClose;
     private String maxInvest;
+    private boolean eventInstrumentEnable;
+    private boolean eventLiquidationEnable;
+    private boolean eventOrderEnable;
+    private boolean eventPositionEnable;
+    private boolean eventQuoteEnable;
+    private boolean eventTradeEnable;
+    private boolean eventWalletEnable;
 
-    private Properties(String endpoint, String apiKey, String apiSecret, String leverage, String trading, String notifyOpen, String notifyClose, String maxInvest) {
+    private Properties(String endpoint, String apiKey, String apiSecret, String leverage, String trading,
+                       String notifyOpen, String notifyClose, String maxInvest, boolean eventInstrumentEnable,
+                       boolean eventLiquidationEnable, boolean eventOrderEnable, boolean eventPositionEnable,
+                       boolean eventQuoteEnable, boolean eventTradeEnable, boolean eventWalletEnable) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
@@ -19,6 +29,13 @@ public class Properties {
         this.notifyOpen = notifyOpen;
         this.notifyClose = notifyClose;
         this.maxInvest = maxInvest;
+        this.eventInstrumentEnable = eventInstrumentEnable;
+        this.eventLiquidationEnable = eventLiquidationEnable;
+        this.eventOrderEnable = eventOrderEnable;
+        this.eventPositionEnable = eventPositionEnable;
+        this.eventQuoteEnable = eventQuoteEnable;
+        this.eventTradeEnable = eventTradeEnable;
+        this.eventWalletEnable = eventWalletEnable;
     }
 
     public String getEndpoint() {
@@ -53,6 +70,34 @@ public class Properties {
         return maxInvest;
     }
 
+    public boolean isEventInstrumentEnable() {
+        return eventInstrumentEnable;
+    }
+
+    public boolean isEventLiquidationEnable() {
+        return eventLiquidationEnable;
+    }
+
+    public boolean isEventOrderEnable() {
+        return eventOrderEnable;
+    }
+
+    public boolean isEventPositionEnable() {
+        return eventPositionEnable;
+    }
+
+    public boolean isEventQuoteEnable() {
+        return eventQuoteEnable;
+    }
+
+    public boolean isEventTradeEnable() {
+        return eventTradeEnable;
+    }
+
+    public boolean isEventWalletEnable() {
+        return eventWalletEnable;
+    }
+
     public static class PropertiesBuilder {
         private String endpoint;
         private String apiKey;
@@ -62,6 +107,14 @@ public class Properties {
         private String notifyOpen;
         private String notifyClose;
         private String maxInvest;
+        private boolean eventInstrumentEnable;
+        private boolean eventLiquidationEnable;
+        private boolean eventOrderEnable;
+        private boolean eventPositionEnable;
+        private boolean eventQuoteEnable;
+        private boolean eventTradeEnable;
+        private boolean eventWalletEnable;
+
 
         public PropertiesBuilder endpoint(String endpoint) {
             this.endpoint = endpoint;
@@ -103,6 +156,41 @@ public class Properties {
             return this;
         }
 
+        public PropertiesBuilder eventInstrumentEnable(boolean eventInstrumentEnable) {
+            this.eventInstrumentEnable = eventInstrumentEnable;
+            return this;
+        }
+
+        public PropertiesBuilder eventLiquidationEnable(boolean eventLiquidationEnable) {
+            this.eventLiquidationEnable = eventLiquidationEnable;
+            return this;
+        }
+
+        public PropertiesBuilder eventOrderEnable(boolean eventOrderEnable) {
+            this.eventOrderEnable = eventOrderEnable;
+            return this;
+        }
+
+        public PropertiesBuilder eventPositionEnable(boolean eventPositionEnable) {
+            this.eventPositionEnable = eventPositionEnable;
+            return this;
+        }
+
+        public PropertiesBuilder eventQuoteEnable(boolean eventQuoteEnable) {
+            this.eventQuoteEnable = eventQuoteEnable;
+            return this;
+        }
+
+        public PropertiesBuilder eventTradeEnable(boolean eventTradeEnable) {
+            this.eventTradeEnable = eventTradeEnable;
+            return this;
+        }
+
+        public PropertiesBuilder eventWalletEnable(boolean eventWalletEnable) {
+            this.eventWalletEnable = eventWalletEnable;
+            return this;
+        }
+
         public Properties build() {
             return new Properties(
                     this.endpoint,
@@ -112,7 +200,14 @@ public class Properties {
                     this.trading,
                     this.notifyOpen,
                     this.notifyClose,
-                    this.maxInvest
+                    this.maxInvest,
+                    this.eventInstrumentEnable,
+                    this.eventLiquidationEnable,
+                    this.eventOrderEnable,
+                    this.eventPositionEnable,
+                    this.eventQuoteEnable,
+                    this.eventTradeEnable,
+                    this.eventWalletEnable
             );
         }
     }

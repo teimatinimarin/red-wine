@@ -26,7 +26,7 @@ module redwine.sensor {
     opens com.beuwa.redwine.sensor.app;
     opens com.beuwa.redwine.sensor.config;
     opens com.beuwa.redwine.sensor.events;
+    opens com.beuwa.redwine.sensor.observers;
     opens com.beuwa.redwine.sensor.producers;
     opens com.beuwa.redwine.sensor.utils;
-
 }
