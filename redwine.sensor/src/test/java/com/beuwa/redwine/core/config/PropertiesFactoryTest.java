@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.config;
+package com.beuwa.redwine.core.config;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

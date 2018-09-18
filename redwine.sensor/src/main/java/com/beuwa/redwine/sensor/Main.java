@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor;
 
-import com.beuwa.redwine.sensor.events.BootEvent;
+import com.beuwa.redwine.core.events.BootEvent;
 
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;

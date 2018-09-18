@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.sensor.events.QuoteEvent;
+import com.beuwa.redwine.core.events.QuoteEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;

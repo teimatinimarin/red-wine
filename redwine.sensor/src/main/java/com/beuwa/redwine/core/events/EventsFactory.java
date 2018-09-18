@@ -1,8 +1,9 @@
-package com.beuwa.redwine.sensor.events;
+package com.beuwa.redwine.core.events;
 
 import javax.json.*;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public class EventsFactory {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
@@ -101,6 +102,9 @@ public class EventsFactory {
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
 
         InstrumentEvent.InstrumentEventBuilder builder = new InstrumentEvent.InstrumentEventBuilder();
+
+        String timestamp = data.getString("timestamp");
+        builder.epoch(Instant.parse(timestamp).toEpochMilli());
 
         JsonNumber openInterestNumber =  data.getJsonNumber("openInterest");
         if(openInterestNumber != null) {

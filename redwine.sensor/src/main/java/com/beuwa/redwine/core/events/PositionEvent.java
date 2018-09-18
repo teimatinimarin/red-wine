@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.events;
+package com.beuwa.redwine.core.events;
 
 /**
  * <code

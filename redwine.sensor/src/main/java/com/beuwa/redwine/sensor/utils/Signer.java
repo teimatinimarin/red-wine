@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.utils;
 
-import com.beuwa.redwine.sensor.config.PropertiesFacade;
+import com.beuwa.redwine.core.config.PropertiesFacade;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
