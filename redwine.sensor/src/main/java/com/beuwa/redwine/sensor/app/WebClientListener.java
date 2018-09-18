@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.app;
 
-import com.beuwa.redwine.sensor.config.PropertiesFacade;
+import com.beuwa.redwine.core.config.PropertiesFacade;
 import com.beuwa.redwine.sensor.utils.Signer;
 import com.beuwa.redwine.sensor.utils.SubscribeUtils;
 import org.apache.logging.log4j.Logger;
@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import javax.inject.Inject;
 import javax.websocket.*;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -54,7 +53,6 @@ public class WebClientListener {
 
     @OnMessage
     public void onMessage(String message) {
-        logger.info(message);
         messageProcessor.process(message);
     }
 

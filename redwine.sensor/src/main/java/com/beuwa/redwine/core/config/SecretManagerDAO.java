@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.config;
+package com.beuwa.redwine.core.config;
 
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;

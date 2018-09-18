@@ -1,7 +1,7 @@
 package com.beuwa.redwine.sensor.app;
 
-import com.beuwa.redwine.sensor.events.BusinessEvent;
-import com.beuwa.redwine.sensor.events.EventsFactory;
+import com.beuwa.redwine.core.events.BusinessEvent;
+import com.beuwa.redwine.core.events.EventsFactory;
 
 import org.apache.logging.log4j.Logger;
 

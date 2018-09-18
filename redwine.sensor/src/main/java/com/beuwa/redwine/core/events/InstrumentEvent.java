@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.events;
+package com.beuwa.redwine.core.events;
 
 /**
  * <code>
@@ -234,6 +234,8 @@ package com.beuwa.redwine.sensor.events;
 public class InstrumentEvent implements BusinessEvent {
     // https://www.bitmex.com/app/contract/XBTUSD
 
+    private long epoch;
+
     // Total number of contracts in existence
     private long openInterest;
 
@@ -252,13 +254,18 @@ public class InstrumentEvent implements BusinessEvent {
     // This is the price used for PNL
     private long markPrice;
 
-    private InstrumentEvent(long openInterest, long turnover24H, long value24H, long bidPrice, long askPrice, long markPrice) {
+    private InstrumentEvent(long epoch, long openInterest, long turnover24H, long value24H, long bidPrice, long askPrice, long markPrice) {
+        this.epoch = epoch;
         this.openInterest = openInterest;
         this.turnover24H = turnover24H;
         this.value24H = value24H;
         this.bidPrice = bidPrice;
         this.askPrice = askPrice;
         this.markPrice = markPrice;
+    }
+
+    public long getEpoch() {
+        return epoch;
     }
 
     public long getOpenInterest() {
@@ -286,12 +293,18 @@ public class InstrumentEvent implements BusinessEvent {
     }
 
     public static class InstrumentEventBuilder {
+        private long epoch;
         private long openInterest;
         private long turnover24H;
         private long value24H;
         private long bidPrice;
         private long askPrice;
         private long markPrice;
+
+        public InstrumentEventBuilder epoch(long epoch) {
+            this.epoch = epoch;
+            return this;
+        }
 
         public InstrumentEventBuilder openInterest(long openInterest) {
             this.openInterest = openInterest;
@@ -325,6 +338,7 @@ public class InstrumentEvent implements BusinessEvent {
 
         public InstrumentEvent build() {
             return new InstrumentEvent(
+                    epoch,
                     openInterest,
                     turnover24H,
                     value24H,

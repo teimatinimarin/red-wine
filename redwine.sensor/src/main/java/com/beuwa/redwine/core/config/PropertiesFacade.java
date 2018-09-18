@@ -1,14 +1,14 @@
-package com.beuwa.redwine.sensor.config;
+package com.beuwa.redwine.core.config;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 @Default
-@Singleton
+@ApplicationScoped
 public class PropertiesFacade {
     @Inject
     private SecretManagerDAO secretManagerDao;

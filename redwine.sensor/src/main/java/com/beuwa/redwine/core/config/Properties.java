@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.config;
+package com.beuwa.redwine.core.config;
 
 public class Properties {
     private String endpoint;

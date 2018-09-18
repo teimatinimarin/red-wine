@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.config;
+package com.beuwa.redwine.core.config;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class SecretManagerDAOTest {
     @Test
     void retrieveSecrets() {
         GetSecretValueResponse response = Mockito.mock(GetSecretValueResponse.class);
-        Mockito.when(response.secretString()).thenReturn("Secret String");
+        when(response.secretString()).thenReturn("Secret String");
         when(smClient.getSecretValue((GetSecretValueRequest) any())).thenReturn( response );
         String secret = secretManagerDAO.retrieveSecrets();
         Assertions.assertEquals("Secret String", secret);

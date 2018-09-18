@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.events;
+package com.beuwa.redwine.core.events;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ class EventsFactoryTest {
 
     @Test
     void createInstrumentEvent() throws URISyntaxException, IOException {
-        URL uri = getClass().getClassLoader().getResource("com/beuwa/redwine/sensor/events/instrument-event.json");
+        URL uri = getClass().getClassLoader().getResource("com/beuwa/redwine/core/events/instrument-event.json");
         Path path = Paths.get(uri.toURI());
         byte[] content = Files.readAllBytes(path);
         String message = new String(content);

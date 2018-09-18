@@ -1,8 +1,8 @@
 package com.beuwa.redwine.sensor.app;
 
 
-import com.beuwa.redwine.sensor.config.PropertiesFacade;
-import com.beuwa.redwine.sensor.events.BootEvent;
+import com.beuwa.redwine.core.config.PropertiesFacade;
+import com.beuwa.redwine.core.events.BootEvent;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.tyrus.client.ClientManager;
 
