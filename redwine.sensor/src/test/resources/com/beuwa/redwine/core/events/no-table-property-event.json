@@ -1,0 +1,9 @@
+{"info":"Welcome to the BitMEX Realtime API.","version":"2018-09-07T19:37:21.000Z","timestamp":"2018-09-12T14:06:37.142Z","docs":"https://www.bitmex.com/app/wsAPI","limit":{"remaining":38}}
+{"success":true,"request":{"op":"authKeyExpires","args":["dGQariKZofAplr_TDIpjhtrs",1536761206,"B8229C826C22002AEDE4CE7421DA504A66ADDD00E0FA412FDEB15D762E617E9A"]}}
+{"success":true,"subscribe":"instrument:XBTUSD","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
+{"success":true,"subscribe":"liquidation:XBTUSD","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
+{"success":true,"subscribe":"order","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
+{"success":true,"subscribe":"position","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
+{"success":true,"subscribe":"quote:XBTUSD","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
+{"success":true,"subscribe":"trade:XBTUSD","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
+{"success":true,"subscribe":"wallet","request":{"op":"subscribe","args":["instrument:XBTUSD","liquidation:XBTUSD","order","position","quote:XBTUSD","trade:XBTUSD","wallet"]}}
