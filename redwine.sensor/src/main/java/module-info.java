@@ -33,4 +33,5 @@ module redwine.sensor {
     opens com.beuwa.redwine.sensor.utils;
     opens com.beuwa.redwine.strategy.sma.statistics;
     opens com.beuwa.redwine.strategy.sma.observers;
+    opens com.beuwa.redwine.strategy.sma.dao;
 }

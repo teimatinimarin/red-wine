@@ -1,17 +1,17 @@
 package com.beuwa.redwine.strategy.sma.utils;
 
 public enum Fibonacci {
-    _382(382L),
-    _090(90L),
-    _008(8L);
+    FIBONACCI_382(382),
+    FIBONACCI_090(90),
+    FIBONACCI_008(8);
 
-    private long perMille;
+    private int perMille;
 
-    Fibonacci(long perMille) {
+    Fibonacci(int perMille) {
         this.perMille = perMille;
     }
 
-    public long getPerMille() {
+    public int getPerMille() {
         return perMille;
     }
 }

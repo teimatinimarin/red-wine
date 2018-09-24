@@ -24,13 +24,13 @@ class WindowMapTest {
         long epoch = Instant.now().toEpochMilli();
         windowMap.put(epoch - 300001, 100L);
         windowMap.put(epoch + 0, 100L);
-        windowMap.put(epoch + 1, 200L);
-        windowMap.put(epoch + 2, 300L);
+        windowMap.put(epoch + 1, 300L);
+        windowMap.put(epoch + 2, 500L);
 
-        /*assertEquals(200L, windowMap.getSma());
-        assertEquals(100L, windowMap.getMin());
-        assertEquals(300L, windowMap.getMax());
-        assertEquals(300L, windowMap.getCurrent());
-        assertEquals(3, windowMap.size());*/
+        assertEquals(300L, windowMap.getSmaCurrent());
+        assertEquals(100L, windowMap.getSmaMin());
+        assertEquals(300L, windowMap.getSmaMax());
+        assertEquals(500L, windowMap.getPriceCurrent());
+        assertEquals(3, windowMap.size());
     }
 }

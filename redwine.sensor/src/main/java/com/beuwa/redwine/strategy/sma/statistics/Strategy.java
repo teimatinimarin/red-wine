@@ -101,7 +101,7 @@ public class Strategy {
         var min = statistics.getMin();
 
         var range = max - min;
-        var targetRange = Math.round(sma * Fibonacci._008.getPerMille() / 1000);
+        var targetRange = Math.round(sma * Fibonacci.FIBONACCI_008.getPerMille() / 1000f);
 
         if(range >= targetRange) {
             reached = true;
