@@ -18,72 +18,93 @@ public class WindowMap {
     @Inject
     private PropertiesFacade propertiesFacade;
 
+    private boolean gathered = false;
     private boolean warmed = false;
 
-    private long sma;
-    private long max;
-    private long min;
+    private long smaCurrent;
+    private long smaMax;
+    private long smaMin;
 
-    private static final long TIME = 300000; // 5 Mins
+    private static final long MINS_5 = 5 * 60 * 1000L; // 5 Mins
+    private static final long MINS_60 = 60 * 60 * 1000L; // 60 Mins
 
+    // I don't extend TreeMap, cause I don't wanna expose all the methods TreeMap has
     private NavigableMap<Long, Long> values = new TreeMap<>();
+    private NavigableMap<Long, Long> smas = new TreeMap<>();
 
     public boolean put(Long epoch, Long price) {
         boolean calculated = false;
 
-        if(price > 0L) {
-            // Add new price
-            values.put(epoch, price);
+        // Add new price
+        values.put(epoch, price);
 
-            // Purge old prices
-            while (values.firstKey().longValue() < epoch.longValue() - TIME) {
-                values.remove(values.firstKey());
-                warmed = true;
+        // Purge old prices from values
+        while (values.firstKey().longValue() < epoch.longValue() - MINS_5) {
+            values.remove(values.firstKey());
+
+            if(!gathered) {
+                gathered = true;
+                logger.info("Gathering data to start SMA calculation COMPLETED!");
+            }
+        }
+
+        if(gathered) {
+            // Calculate statics and send event
+            smaCurrent = (long) values.values().stream().mapToLong(l -> l.longValue()).average().getAsDouble();
+            smas.put(epoch, smaCurrent);
+
+            while (smas.firstKey().longValue() < epoch.longValue() - MINS_60) {
+                smas.remove(smas.firstKey());
+
+                if (!warmed) {
+                    warmed = true;
+                    logger.info("Warming up COMPLETED!");
+                }
             }
 
-            if (warmed) {
-                // Calculate statics and send event
-                LongSummaryStatistics statics = values.values().stream().collect(Collectors.summarizingLong(value -> value));
-                sma = (long) statics.getAverage();
-                max = statics.getMax();
-                min = statics.getMin();
+            LongSummaryStatistics statics = smas.values().stream().collect( Collectors.summarizingLong(value -> value) );
+            smaMax = statics.getMax();
+            smaMin = statics.getMin();
+        }
 
-                calculated = true;
-            } else {
-                logger.info("Warming up...");
-            }
+        if (warmed) {
+            calculated = true;
+        } else if (!gathered) {
+            logger.info("Gathering data to start SMA calculation...");
+        } else {
+            logger.info("Warming up...");
         }
 
         return calculated;
     }
 
-    public String getDateString() {
+    public String getLastTickTimestamp() {
         Instant instant = Instant.ofEpochMilli ( values.lastKey() );
         DateTimeFormatter formatter = DateTimeFormatter
-                .ofLocalizedDateTime(FormatStyle.SHORT)
+                .ofLocalizedTime(FormatStyle.FULL)
                 .withLocale(Locale.US)
                 .withZone(ZoneOffset.UTC);
 
         return formatter.format(instant);
     }
 
-    public long getSma() {
-        return sma;
+    public long getSmaCurrent() {
+        return smaCurrent;
     }
 
-    public long getCurrent() {
+    public long getPriceCurrent() {
         return values.lastEntry().getValue();
     }
 
-    public long getMax() {
-        return max;
+    public long getSmaMax() {
+        return smaMax;
     }
 
-    public long getMin() {
-        return min;
+    public long getSmaMin() {
+        return smaMin;
     }
 
     public long size() {
-        return values.size();
+        return smas.size();
     }
 }

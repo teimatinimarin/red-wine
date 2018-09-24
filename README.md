@@ -30,6 +30,7 @@ Gradle is not in use in this project be the moment...
 * [Tyrus] (https://tyrus-project.github.io/)
 * [Log4J2] (https://logging.apache.org/log4j/2.x/)
 * [Jackson] (https://github.com/FasterXML/jackson)
+* [NewHttp] Need to specify --add-modules jdk.incubator.httpclient 
 
 #### Maven plugins used in this project
 * org.sonarqube to run Static Analysis
