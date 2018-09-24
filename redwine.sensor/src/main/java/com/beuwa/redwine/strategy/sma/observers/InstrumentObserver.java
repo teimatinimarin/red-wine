@@ -1,9 +1,7 @@
 package com.beuwa.redwine.strategy.sma.observers;
 
 import com.beuwa.redwine.core.events.InstrumentEvent;
-import com.beuwa.redwine.strategy.sma.events.SMAEvent;
-import com.beuwa.redwine.strategy.sma.events.StatisticsEvent;
-import com.beuwa.redwine.strategy.sma.statistics.Statistics;
+import com.beuwa.redwine.strategy.sma.events.*;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Event;
@@ -15,12 +13,23 @@ public class InstrumentObserver {
     Logger logger;
 
     @Inject
-    Statistics statistics;
+    private Event<PricePublishedEvent> event;
 
-    @Inject
-    private Event<StatisticsEvent> event;
+    public void processIntrumentEvent(@Observes InstrumentEvent instrumentEvent) {
+        long epoch = instrumentEvent.getEpoch();
+        if (instrumentEvent.getMarkPrice() > 0) {
+            // We are not interested in this event if Mark Price is Zero.
+            event.fire(new MarketPricePublishedEvent(epoch, instrumentEvent.getMarkPrice()));
+        }
+        if (instrumentEvent.getBidPrice() > 0) {
+            // We are not interested in this event if Mark Price is Zero.
+            event.fire(new BidPricePublishedEvent(epoch, instrumentEvent.getBidPrice()));
+        }
+        if (instrumentEvent.getAskPrice() > 0) {
+            // We are not interested in this event if Mark Price is Zero.
+            event.fire(new AskPricePublishedEvent(epoch, instrumentEvent.getAskPrice()));
+        }
 
-    public void observe(@Observes InstrumentEvent instrumentEvent) {
         logger.debug(
                 "Instrument XBTUSD: Opened: {}, TurnOver24Hrs: {}, Value24Hrs: {}, BidPrice: {}, AskPrice:{}, MarketPrice: {}",
                 instrumentEvent.getOpenInterest(),
@@ -29,11 +38,6 @@ public class InstrumentObserver {
                 instrumentEvent.getBidPrice(),
                 instrumentEvent.getAskPrice(),
                 instrumentEvent.getMarkPrice()
-        );
-
-        if( statistics.getSmaMarkPrice().put(instrumentEvent.getEpoch(), instrumentEvent.getMarkPrice()) ) {
-            SMAEvent smaEvent = new SMAEvent(statistics.getSmaMarkPrice());
-            event.fire(smaEvent);
-        }
+            );
     }
 }

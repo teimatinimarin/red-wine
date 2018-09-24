@@ -10,6 +10,7 @@ module redwine.sensor {
     // Websocket Client
     requires tyrus.client;
     requires javax.websocket.api;
+    requires jdk.incubator.httpclient;
 
     // Logging
     requires org.apache.logging.log4j;
@@ -31,5 +32,5 @@ module redwine.sensor {
     opens com.beuwa.redwine.sensor.producers;
     opens com.beuwa.redwine.sensor.utils;
     opens com.beuwa.redwine.strategy.sma.statistics;
-    opens com.beuwa.redwine.strategy.sma.observers to openwebbeans.impl;
+    opens com.beuwa.redwine.strategy.sma.observers;
 }
