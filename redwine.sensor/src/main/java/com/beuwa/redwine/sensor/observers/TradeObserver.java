@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.core.events.TradeEvent;
+import com.beuwa.redwine.core.events.business.TradeEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;
@@ -11,7 +11,7 @@ public class TradeObserver {
     Logger logger;
 
     public void observe(@Observes TradeEvent event) {
-        logger.info(
+        logger.debug(
                 "Trade: {} at {}, GrossValue: {}, ForeignNotional: {}",
                 event.getSide(),
                 event.getPrice(),

@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.core.events.PositionEvent;
+import com.beuwa.redwine.core.events.business.PositionEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;
@@ -11,6 +11,11 @@ public class PositionObserver {
     Logger logger;
 
     public void observe(@Observes PositionEvent event) {
-        logger.info( "Position: {}", event.getMessage());
+        logger.debug(
+                "Position: IsOpened: {}, PositionMargin: {}, PositionContracts: {}",
+                event.isPositionOpened(),
+                event.getPositionMargin(),
+                event.getPositionContracts()
+        );
     }
 }

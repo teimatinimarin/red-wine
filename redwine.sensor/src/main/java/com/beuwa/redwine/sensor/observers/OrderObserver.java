@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.core.events.OrderEvent;
+import com.beuwa.redwine.core.events.business.OrderEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;
@@ -11,6 +11,6 @@ public class OrderObserver {
     Logger logger;
 
     public void observe(@Observes OrderEvent event) {
-        logger.info( "Order: {}", event.getMessage());
+        logger.debug( "Order: {}", event.getMessage());
     }
 }

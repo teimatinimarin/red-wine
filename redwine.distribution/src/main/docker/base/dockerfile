@@ -1,0 +1,11 @@
+FROM ubuntu:18.04
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    wget
+
+RUN wget https://download.java.net/openjdk/jdk10/ri/jdk-10_linux-x64_bin_ri.tar.gz && sha256sum jdk-10_linux-x64_bin_ri.tar.gz
+RUN mkdir -p /opt/java && \
+    tar -xf jdk-10_linux-x64_bin_ri.tar.gz --directory /opt/java && \
+    rm jdk-10_linux-x64_bin_ri.tar.gz
+ENV JAVA_HOME=/opt/java/jdk-10
+ENV PATH=$PATH:/opt/java/jdk-10/bin

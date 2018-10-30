@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>dist</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <baseDirectory>tm</baseDirectory>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <files>
+        <file>
+            <source>src/main/docker/dockerfile</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/scripts/entrypoint.sh</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>../redwine.sensor/target/redwine-sensor-${pom.version}.jar</source>
+            <outputDirectory>bin/</outputDirectory>
+        </file>
+    </files>
+    <fileSets>
+        <fileSet>
+            <directory>../redwine.sensor/target/lib/</directory>
+            <outputDirectory>lib/</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>

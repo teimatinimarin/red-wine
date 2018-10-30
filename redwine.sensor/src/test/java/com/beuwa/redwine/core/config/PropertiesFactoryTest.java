@@ -1,5 +1,6 @@
 package com.beuwa.redwine.core.config;
 
+import com.beuwa.redwine.core.config.beans.Properties;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -21,11 +22,16 @@ class PropertiesFactoryTest {
         assertEquals("endpoint", properties.getEndpoint());
         assertEquals("api_key", properties.getApiKey());
         assertEquals("api_secret", properties.getApiSecret());
-        assertEquals("leverage", properties.getLeverage());
-        assertEquals("trading", properties.getTrading());
+        assertEquals("trading", properties.getRedwineTrading());
+        assertEquals("tracking", properties.getRedwineTracking());
+        assertEquals("sns", properties.getRedwineSns());
         assertEquals("open_email", properties.getNotifyOpen());
         assertEquals("close_email", properties.getNotifyClose());
         assertEquals("max_invest", properties.getMaxInvest());
+        assertEquals("percentage_to_invest", properties.getPercentageToInvest());
+        assertEquals("leverage", properties.getLeverage());
+        assertEquals(15000, properties.getRedwineSmaPeriod());
+        assertEquals(15000, properties.getRedwineWarmupPeriod());
         assertEquals(true, properties.isEventInstrumentEnable());
         assertEquals(true, properties.isEventLiquidationEnable());
         assertEquals(true, properties.isEventOrderEnable());

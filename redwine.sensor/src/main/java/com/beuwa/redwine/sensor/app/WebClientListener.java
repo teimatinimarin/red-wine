@@ -12,7 +12,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
-
 @ClientEndpoint
 public class WebClientListener {
     @Inject
@@ -38,7 +37,7 @@ public class WebClientListener {
         long epoch = Instant.now().getEpochSecond();
         long expires = epoch + 10;
 
-        String signature = signer.encode("GET", "/realtime",expires, "");
+        String signature = signer.sign("GET", "/realtime",expires, "");
         String auth = String.format(
                 "{\"op\": \"authKeyExpires\", \"args\": [\"%s\",%d,\"%s\"]}",
                 key,
