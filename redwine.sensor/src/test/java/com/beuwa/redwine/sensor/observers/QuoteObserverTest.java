@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.core.events.QuoteEvent;
+import com.beuwa.redwine.core.events.business.QuoteEvent;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

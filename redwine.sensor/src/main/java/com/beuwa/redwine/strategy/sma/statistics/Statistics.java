@@ -1,12 +1,13 @@
 package com.beuwa.redwine.strategy.sma.statistics;
 
+import com.beuwa.redwine.strategy.sma.constants.Fibonacci;
+import com.beuwa.redwine.strategy.sma.constants.Status;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
 public class Statistics {
-    public enum MIN_MAX_STATUS{NEW_MIN, NEW_MAX, EXISTING, WARMING_UP}
-
     @Inject
     private WindowMap smaMarkPrice;
 
@@ -15,20 +16,31 @@ public class Statistics {
     private long min = 0L;
 
     private long bid = 0L;
+    private long bidSize = 0L;
     private long ask = 0L;
+    private long askSize = 0L;
 
-    public MIN_MAX_STATUS addMarkPrice(long epoch, long markPrice) {
-        MIN_MAX_STATUS status = null;
+    private long range = 0L;
+    private long targetRange = 0L;
+
+    private long walletBalance;
+    private boolean positionOpened;
+    private long positionMargin;
+    private long positionContracts;
+    private long realisedPnl;
+
+    public int addMarkPrice(long epoch, long markPrice) {
+        int status = -1;
 
         boolean calculated = smaMarkPrice.put(epoch, markPrice);
         sma = smaMarkPrice.getSmaCurrent();
         if(calculated) {
             if(smaMarkPrice.getSmaMax() > max) {
-                status = MIN_MAX_STATUS.NEW_MAX;
+                status = Status.NEW_MAX;
             } else if(smaMarkPrice.getSmaMin() < min) {
-                status = MIN_MAX_STATUS.NEW_MIN;
+                status = Status.NEW_MIN;
             } else {
-                status = MIN_MAX_STATUS.EXISTING;
+                status = Status.EXISTING;
             }
 
             max = smaMarkPrice.getSmaMax();
@@ -37,10 +49,15 @@ public class Statistics {
         } else {
             max = smaMarkPrice.getSmaMax();
             min = smaMarkPrice.getSmaMin();
-            status = MIN_MAX_STATUS.WARMING_UP;
+            status = Status.WARMING_UP;
         }
 
         return status;
+    }
+
+    public void calculateRages() {
+        range = max - min;
+        targetRange = Math.round(sma * Fibonacci.FIBONACCI_008 / 1000f);
     }
 
     public String getLastTickTimestamp() {
@@ -71,6 +88,14 @@ public class Statistics {
         this.bid = bid;
     }
 
+    public long getBidSize() {
+        return bidSize;
+    }
+
+    public void setBidSize(long bidSize) {
+        this.bidSize = bidSize;
+    }
+
     public long getAsk() {
         return ask;
     }
@@ -79,7 +104,63 @@ public class Statistics {
         this.ask = ask;
     }
 
+    public long getAskSize() {
+        return askSize;
+    }
+
+    public void setAskSize(long askSize) {
+        this.askSize = askSize;
+    }
+
     public long size() {
         return smaMarkPrice.size();
+    }
+
+    public long getRange() {
+        return range;
+    }
+
+    public long getTargetRange() {
+        return targetRange;
+    }
+
+    public void setWalletBalance(long walletBalance) {
+        this.walletBalance = walletBalance;
+    }
+
+    public long getWalletBalance() {
+        return this.walletBalance;
+    }
+
+    public boolean isPositionOpened() {
+        return positionOpened;
+    }
+
+    public void setPositionOpened(boolean positionOpened) {
+        this.positionOpened = positionOpened;
+    }
+
+    public long getPositionMargin() {
+        return positionMargin;
+    }
+
+    public void setPositionMargin(long positionMargin) {
+        this.positionMargin = positionMargin;
+    }
+
+    public long getPositionContracts() {
+        return positionContracts;
+    }
+
+    public void setPositionContracts(long positionContracts) {
+        this.positionContracts = positionContracts;
+    }
+
+    public long getRealisedPnl() {
+        return realisedPnl;
+    }
+
+    public void setRealisedPnl(long realisedPnl) {
+        this.realisedPnl = realisedPnl;
     }
 }

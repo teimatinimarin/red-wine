@@ -24,7 +24,7 @@ class SignerTest {
     void encode() throws Exception {
         when(propertiesFacade.getApiSecret()).thenReturn("SECRET");
 
-        String hex = signer.encode("Hello", " ",  10000000,"World");
+        String hex = signer.sign("Hello", " ",  10000000,"World");
         assertEquals(
                 "A11F0A6C3908F30438BBE69A6EFBA61AC0F9C2F8F09789F76CD81C576E29027B",
                 hex);

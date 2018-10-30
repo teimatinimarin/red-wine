@@ -1,5 +1,7 @@
 package com.beuwa.redwine.core.events;
 
+import com.beuwa.redwine.core.events.business.*;
+
 import javax.json.*;
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -8,8 +10,8 @@ import java.time.Instant;
 public class EventsFactory {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
 
-    public BusinessEvent build(String message) {
-        BusinessEvent event = null;
+    public BusinessEvent[] build(String message) {
+        BusinessEvent[] events = null;
 
         try(JsonReader jsonReader = Json.createReader( new StringReader(message) )) {
             JsonObject jsonObject = jsonReader.readObject();
@@ -22,44 +24,47 @@ public class EventsFactory {
             if(table != null) {
                 switch (table) {
                     case "wallet":
-                        event = createWalletEvent(jsonObject);
+                        events = createWalletEvent(jsonObject);
                         break;
                     case "quote":
-                        event = createQuoteEvent(jsonObject);
+                        events = createQuoteEvent(jsonObject);
                         break;
                     case "trade":
-                        event = createTradeEvent(jsonObject);
+                        events = createTradeEvent(jsonObject);
                         break;
                     case "instrument":
-                        event = createInstrumentEvent(jsonObject);
+                        events = createInstrumentEvent(jsonObject);
                         break;
                     case "liquidation":
-                        event = createLiquidationEvent(jsonObject);
+                        events = createLiquidationEvent(jsonObject);
                         break;
                     case "order":
-                        event = createOrderEvent(jsonObject);
+                        events = createOrderEvent(jsonObject);
                         break;
                     case "position":
-                        event = createPositionEvent(jsonObject);
+                        events = createPositionEvent(jsonObject);
                         break;
                     default:
                 }
             }
         }
 
-        return event;
+        return events;
     }
 
-    private BusinessEvent createWalletEvent(JsonObject document) {
+    private BusinessEvent[] createWalletEvent(JsonObject document) {
         JsonArray jsonArray = document.getJsonArray("data");
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
-        long amount = data.getInt("amount");
-        return new WalletEvent.WalletEventBuilder()
-                .amount( amount )
+        long amount = data.getJsonNumber("amount").longValue();
+
+        WalletEvent walletEvent = new WalletEvent.WalletEventBuilder()
+                .amount(amount)
                 .build();
+
+        return new BusinessEvent[]{walletEvent};
     }
 
-    private BusinessEvent createQuoteEvent(JsonObject document) {
+    private BusinessEvent[] createQuoteEvent(JsonObject document) {
         JsonArray jsonArray = document.getJsonArray("data");
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
 
@@ -71,15 +76,17 @@ public class EventsFactory {
         JsonNumber askPriceNumber = data.getJsonNumber("askPrice");
         long askPrice = askPriceNumber.bigDecimalValue().multiply(ONE_HUNDRED).longValue();
 
-        return new QuoteEvent.QuoteEventBuilder()
+        QuoteEvent quoteEvent = new QuoteEvent.QuoteEventBuilder()
                 .bidSize( bidSize )
                 .bidPrice( bidPrice )
                 .askSize( askSize )
                 .askPrice( askPrice )
                 .build();
+
+        return new BusinessEvent[]{quoteEvent};
     }
 
-    private BusinessEvent createTradeEvent(JsonObject document) {
+    private BusinessEvent[] createTradeEvent(JsonObject document) {
         JsonArray jsonArray = document.getJsonArray("data");
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
 
@@ -89,15 +96,17 @@ public class EventsFactory {
         long grossValue = data.getJsonNumber("grossValue").longValue();
         long foreignNotional = data.getJsonNumber("foreignNotional").longValue();
 
-        return new TradeEvent.TradeEventBuilder()
+        TradeEvent tradeEvent = new TradeEvent.TradeEventBuilder()
                 .side( side )
                 .price( price )
                 .grossValue( grossValue )
                 .foreignNotional( foreignNotional )
                 .build();
+
+        return new BusinessEvent[]{tradeEvent};
     }
 
-    private BusinessEvent createInstrumentEvent(JsonObject document) {
+    private BusinessEvent[] createInstrumentEvent(JsonObject document) {
         JsonArray jsonArray = document.getJsonArray("data");
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
 
@@ -142,24 +151,119 @@ public class EventsFactory {
             builder.markPrice( markPrice );
         }
 
-        return builder.build();
+        return new BusinessEvent[]{builder.build()};
     }
 
-    private BusinessEvent createLiquidationEvent(JsonObject jsonObject) {
-        return new LiquidationEvent.LiquidationEventBuilder()
+    private BusinessEvent[] createLiquidationEvent(JsonObject jsonObject) {
+        LiquidationEvent liquidationEvent = new LiquidationEvent.LiquidationEventBuilder()
                 .message( jsonObject.toString() )
                 .build();
+
+        return new BusinessEvent[]{liquidationEvent};
     }
 
-    private BusinessEvent createOrderEvent(JsonObject jsonObject) {
-        return new OrderEvent.OrderEventBuilder()
-                .message( jsonObject.toString() )
-                .build();
+    private BusinessEvent[] createOrderEvent(JsonObject document) {
+        JsonArray jsonArray = document.getJsonArray("data");
+        OrderEvent[] orderEvents = new OrderEvent[jsonArray.size()];
+        for(int i = 0; i < jsonArray.size(); i++) {
+            JsonObject data = jsonArray.getJsonObject(i);
+            OrderEvent.OrderEventBuilder builder = new OrderEvent.OrderEventBuilder();
+
+            String clientOrderId = data.getString("clOrdID");
+            builder.clientOrderId(clientOrderId);
+
+            if(valid(data, "clOrdLinkID")) {
+                String clientOrderLinkId = data.getString("clOrdLinkID");
+                builder.clientOrderLinkId(clientOrderLinkId);
+            }
+
+            if(valid(data, "side")) {
+                String side = data.getString("side");
+                builder.side(side);
+            }
+
+            if(valid(data, "simpleOrderQty")) {
+                JsonNumber simpleOrderQtyNumber = data.getJsonNumber("simpleOrderQty");
+                long simpleOrderQty = (long) (simpleOrderQtyNumber.doubleValue() * 100000000);
+                builder.simpleOrderQty(simpleOrderQty);
+            }
+
+            if(valid(data, "price")) {
+                JsonNumber priceNumber = data.getJsonNumber("price");
+                long price = (long) (priceNumber.doubleValue() * 100);
+                builder.price(price);
+            }
+
+            if(valid(data, "stopPx")) {
+                JsonNumber stopPxNumber = data.getJsonNumber("stopPx");
+                long stopPx = (long) (stopPxNumber.doubleValue() * 100);
+                builder.stopPx(stopPx);
+            }
+
+            if(valid(data, "ordType")) {
+                String orderType = data.getString("ordType");
+                builder.orderType(orderType);
+            }
+
+            if(valid(data, "ordStatus")) {
+                String orderStatus = data.getString("ordStatus");
+                builder.orderStatus(orderStatus);
+            }
+
+            if(valid(data, "triggered")) {
+                String triggered = data.getString("triggered");
+                builder.triggered(triggered);
+            }
+
+            orderEvents[i] = builder.build();
+        }
+
+        return orderEvents;
     }
 
-    private BusinessEvent createPositionEvent(JsonObject jsonObject) {
-        return new PositionEvent.PositionEventBuilder()
-                .message( jsonObject.toString() )
-                .build();
+    private BusinessEvent[] createPositionEvent(JsonObject document) {
+        PositionEvent positionEvent = null;
+
+        JsonArray jsonArray = document.getJsonArray("data");
+        JsonObject data = jsonArray.getJsonObject(0);
+
+        PositionEvent.PositionEventBuilder builder = new PositionEvent.PositionEventBuilder();
+        if(data.containsKey("isOpen")) {
+            builder.message(document.toString());
+
+            builder.positionOpened(data.getBoolean("isOpen"));
+
+            JsonNumber positionMarginNumber = data.getJsonNumber("posMargin");
+            if (positionMarginNumber != null) {
+                long positionMargin = positionMarginNumber.longValue();
+                builder.positionMargin(positionMargin);
+            }
+
+            JsonNumber positionContractsNumber = data.getJsonNumber("currentQty");
+            if (positionContractsNumber != null) {
+                long positionContracts = positionContractsNumber.longValue();
+                builder.positionContracts(positionContracts);
+            }
+
+            JsonNumber realisedPnlNumber = data.getJsonNumber("realisedPnl");
+            if (realisedPnlNumber != null) {
+                long realisedPnl = realisedPnlNumber.longValue();
+                builder.realisedPnl(realisedPnl);
+            }
+
+            positionEvent = builder.build();
+        }
+
+        return new BusinessEvent[]{positionEvent};
+    }
+
+    private boolean valid(JsonObject data, String key) {
+        var valid = false;
+
+        if(data.containsKey(key) && !data.isNull(key)) {
+           valid = true;
+        }
+
+        return valid;
     }
 }

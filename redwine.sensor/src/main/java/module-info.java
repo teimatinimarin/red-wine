@@ -10,7 +10,8 @@ module redwine.sensor {
     // Websocket Client
     requires tyrus.client;
     requires javax.websocket.api;
-    requires jdk.incubator.httpclient;
+    requires java.net.http;
+    requires jdk.unsupported;
 
     // Logging
     requires org.apache.logging.log4j;
@@ -18,6 +19,7 @@ module redwine.sensor {
     // AWS
     requires aws.core;
     requires secretsmanager;
+    requires sns;
     requires regions;
 
     exports com.beuwa.redwine.sensor.app to tyrus.core;
@@ -34,4 +36,6 @@ module redwine.sensor {
     opens com.beuwa.redwine.strategy.sma.statistics;
     opens com.beuwa.redwine.strategy.sma.observers;
     opens com.beuwa.redwine.strategy.sma.dao;
+    opens com.beuwa.redwine.strategy.sma.utils;
+    opens com.beuwa.redwine.strategy.sma.facade;
 }

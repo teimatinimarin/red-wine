@@ -4,10 +4,48 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n"/>
         </Console>
+        <RollingFile name="MessageAppender" fileName="./logs/messages.log" filePattern="./logs/messages-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="EventAppender" fileName="./logs/events.log" filePattern="./logs/events-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="APIAppender" fileName="./logs/api.log" filePattern="./logs/api-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="RedwineAppender" fileName="./logs/redwine.log" filePattern="./logs/redwine-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
+        <Root level="debug">
+            <AppenderRef ref="Console" level="INFO"/>
+            <AppenderRef ref="RedwineAppender" level="DEBUG"/>
         </Root>
+        <logger name="com.beuwa.redwine.strategy.sma.facade.TradingFacade" level="DEBUG">
+            <AppenderRef ref="Console" />
+        </logger>
+
+        <Logger name="com.beuwa.redwine.sensor.app.MessageProcessor" level="DEBUG" additivity="false">
+            <Appender-ref ref="MessageAppender" level="DEBUG" />
+        </Logger>
+        <Logger name="com.beuwa.redwine.sensor.observers" level="INFO" additivity="false">
+            <Appender-ref ref="EventAppender" level="INFO" />
+        </Logger>
+        <Logger name="com.beuwa.redwine.strategy.sma.dao.BrokerDao" level="DEBUG" additivity="false">
+            <Appender-ref ref="APIAppender" level="DEBUG" />
+        </Logger>
     </Loggers>
 </Configuration>

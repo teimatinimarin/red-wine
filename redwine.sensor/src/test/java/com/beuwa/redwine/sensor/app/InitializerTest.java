@@ -41,7 +41,7 @@ class InitializerTest {
         CountDownLatch mockedLatch = Mockito.mock(CountDownLatch.class);
         initializer.init(new BootEvent(), mockedLatch);
 
-        verify(propertiesFacade, times(1)).buildEndpoint();
+        verify(propertiesFacade, times(1)).getWssEndpoint();
         verify(client, times(1)).connectToServer(any(WebClientListener.class), isNull());
         verify(mockedLatch, times(1)).await();
     }
@@ -53,7 +53,7 @@ class InitializerTest {
         CountDownLatch mockedLatch = Mockito.mock(CountDownLatch.class);
         initializer.init(new BootEvent(), mockedLatch);
 
-        verify(propertiesFacade, times(1)).buildEndpoint();
+        verify(propertiesFacade, times(1)).getWssEndpoint();
         verify(client, times(1)).connectToServer(any(WebClientListener.class), isNull());
         verify(mockedLatch, times(0)).await();
     }
@@ -65,19 +65,19 @@ class InitializerTest {
         CountDownLatch mockedLatch = Mockito.mock(CountDownLatch.class);
         initializer.init(new BootEvent(), mockedLatch);
 
-        verify(propertiesFacade, times(1)).buildEndpoint();
+        verify(propertiesFacade, times(1)).getWssEndpoint();
         verify(client, times(1)).connectToServer(any(WebClientListener.class), isNull());
         verify(mockedLatch, times(0)).await();
     }
 
     @Test
     void connectToServerURISyntaxException() throws Exception {
-        when(propertiesFacade.buildEndpoint()).thenThrow(URISyntaxException.class);
+        when(propertiesFacade.getWssEndpoint()).thenThrow(URISyntaxException.class);
 
         CountDownLatch mockedLatch = Mockito.mock(CountDownLatch.class);
         initializer.init(new BootEvent(), mockedLatch);
 
-        verify(propertiesFacade, times(1)).buildEndpoint();
+        verify(propertiesFacade, times(1)).getWssEndpoint();
         verify(client, times(0)).connectToServer(any(WebClientListener.class), isNull());
         verify(mockedLatch, times(0)).await();
     }

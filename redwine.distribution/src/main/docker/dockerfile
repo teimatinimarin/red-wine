@@ -1,0 +1,14 @@
+FROM openjdk:10-jre
+RUN groupadd --gid 500 ec2-user
+RUN useradd -ms /bin/bash --uid 500 --gid 500 ec2-user
+
+#COPY --chown=ec2-user:ec2-user **/*.py /home/ec2-user/bin/
+COPY . /home/ec2-user/redwine
+RUN mkdir /home/ec2-user/redwine/logs
+RUN chown -R ec2-user:ec2-user /home/ec2-user/redwine
+RUN chmod 700 /home/ec2-user/redwine/entrypoint.sh
+
+USER ec2-user
+
+WORKDIR /home/ec2-user/redwine
+CMD ["./entrypoint.sh"]

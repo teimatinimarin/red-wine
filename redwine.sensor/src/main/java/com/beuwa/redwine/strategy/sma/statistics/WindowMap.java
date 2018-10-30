@@ -3,6 +3,7 @@ package com.beuwa.redwine.strategy.sma.statistics;
 import com.beuwa.redwine.core.config.PropertiesFacade;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -25,12 +26,18 @@ public class WindowMap {
     private long smaMax;
     private long smaMin;
 
-    private static final long MINS_5 = 5 * 60 * 1000L; // 5 Mins
-    private static final long MINS_60 = 60 * 60 * 1000L; // 60 Mins
+    private long smaPeriod;
+    private long warmupPeriod;
 
     // I don't extend TreeMap, cause I don't wanna expose all the methods TreeMap has
     private NavigableMap<Long, Long> values = new TreeMap<>();
     private NavigableMap<Long, Long> smas = new TreeMap<>();
+
+    @PostConstruct
+    public void init() {
+        smaPeriod = propertiesFacade.getRedwineSmaPeriod();
+        warmupPeriod = propertiesFacade.getRedwineWarmupPeriod();
+    }
 
     public boolean put(Long epoch, Long price) {
         boolean calculated = false;
@@ -39,7 +46,7 @@ public class WindowMap {
         values.put(epoch, price);
 
         // Purge old prices from values
-        while (values.firstKey().longValue() < epoch.longValue() - MINS_5) {
+        while (values.firstKey().longValue() < epoch.longValue() - smaPeriod) {
             values.remove(values.firstKey());
 
             if(!gathered) {
@@ -53,7 +60,7 @@ public class WindowMap {
             smaCurrent = (long) values.values().stream().mapToLong(l -> l.longValue()).average().getAsDouble();
             smas.put(epoch, smaCurrent);
 
-            while (smas.firstKey().longValue() < epoch.longValue() - MINS_60) {
+            while (smas.firstKey().longValue() < epoch.longValue() - warmupPeriod) {
                 smas.remove(smas.firstKey());
 
                 if (!warmed) {

@@ -1,0 +1,1 @@
+{"table":"order","action":"update","data":[{"orderID":"218a49d2-6369-6769-e026-dea1f282837f","ordStatus":"Canceled","simpleLeavesQty":0,"leavesQty":0,"text":"Canceled: Cancel from testnet.bitmex.com\nSubmitted via API.","timestamp":"2018-10-15T20:03:11.025Z","clOrdID":"d051da090b11-PARENT","account":47249,"symbol":"XBTUSD"}]}

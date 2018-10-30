@@ -1,0 +1,263 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Creates Redwine Resources
+Parameters:
+  NFS:
+    Description: "Elastic File System Id"
+    Type: String
+Resources:
+
+  # This CloudFormation template creates:
+  # 1: ECR Repository
+  #    This docker repo stores sensor-ticker image
+  # 2: CloudFront Distribution
+  #    Static Site hosted from Edge Locations around the globe... files stored in S3 Bucket
+
+  # Execute this by:
+  # aws cloudformation create-stack --stack-name redwine-stack --capabilities CAPABILITY_NAMED_IAM  --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/application.yml --parameters ParameterKey=NFS,ParameterValue=fs-4ac84583
+  # aws cloudformation update-stack --stack-name redwine-stack --capabilities CAPABILITY_NAMED_IAM  --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/application.yml --parameters ParameterKey=NFS,ParameterValue=fs-4ac84583
+  # aws cloudformation delete-stack --stack-name redwine-stack
+
+  ClusterVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: 10.0.0.0/24
+        EnableDnsSupport: true   # Needed for ACS Agent and cfn-signal
+        EnableDnsHostnames: true # Needed to mount EFS
+        InstanceTenancy: default
+        Tags:
+        - Key: Name
+          Value: ClusterVPC
+
+  ClusterSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ClusterVPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: eu-west-1a
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: Name
+        Value: ClusterSubnet
+
+
+  # Internet Access
+  ClusterInternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+      - Key: Name
+        Value: ClusterInternetGateway
+  VPCInternetGatewayAssociation:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ClusterVPC
+      InternetGatewayId: !Ref ClusterInternetGateway
+
+  # Routing
+  ClusterRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ClusterVPC
+      Tags:
+      - Key: Name
+        Value: ClusterRouteTable
+  InternetIPv4Route:
+      Type: AWS::EC2::Route
+      DependsOn:
+      - ClusterInternetGateway
+      - VPCInternetGatewayAssociation
+      Properties:
+        RouteTableId: !Ref ClusterRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId: !Ref ClusterInternetGateway
+  SubnetRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref ClusterSubnet
+        RouteTableId: !Ref ClusterRouteTable
+
+  NFSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: NFSSecurityGroup
+      GroupDescription: Allow ssh + nfs
+      VpcId: !Ref ClusterVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+  NFSSecurityGroupIngress:
+      Type: 'AWS::EC2::SecurityGroupIngress'
+      DependsOn: NFSSecurityGroup
+      Properties:
+        GroupId: !Ref NFSSecurityGroup
+        IpProtocol: tcp
+        FromPort: 2049
+        ToPort: 2049
+        SourceSecurityGroupId: !GetAtt NFSSecurityGroup.GroupId
+
+  # Mount EFS
+  MountTarget:
+    Type: "AWS::EFS::MountTarget"
+    Properties:
+      FileSystemId: !Ref NFS
+      SubnetId: !Ref ClusterSubnet
+      SecurityGroups:
+      - !Ref NFSSecurityGroup
+
+  # Roles
+  RedwineECSContainerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: RedwineECSContainerRole
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+  RedwineECSContainerRoleInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref RedwineECSContainerRole
+
+  RedwineECSTaskRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: RedwineECSTaskRole
+        Path: "/"
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - ecs-tasks.amazonaws.com
+            Action:
+            - sts:AssumeRole
+  RedwineECSTaskPolicies:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "root"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: "secretsmanager:GetSecretValue"
+            Resource: "arn:aws:secretsmanager:*:*:secret:*"
+          - Effect: "Allow"
+            Action: "SNS:Publish"
+            Resource: "arn:aws:sns:eu-west-1:432127854945:*"
+      Roles:
+        - Ref: RedwineECSTaskRole
+
+  # ECS
+  RedwineCluster:
+    Type: "AWS::ECS::Cluster"
+    Properties:
+      ClusterName: RedwineCluster
+
+  RedwineScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+      - !Ref ClusterSubnet
+      LaunchConfigurationName: !Ref LaunchConfig
+      MinSize: 1
+      MaxSize: 1
+      #ImageId: ami-880d64f1
+      #SecurityGroups:
+      #- Ref: myEC2SecurityGroup
+      #- myExistingEC2SecurityGroup
+      #InstanceType: m1.small
+      Tags:
+      - Key: Name
+        Value: Redwine Scaling Group
+        PropagateAtLaunch: true
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT20M
+    #AutoScalingRollingUpdate:
+    #  MinInstancesInService: '1'
+    #  MaxBatchSize: '2'
+    #  PauseTime: PT1M
+    #  WaitOnResourceSignals: 'true'
+  LaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-880d64f1
+      InstanceType: t2.micro
+      KeyName: beuwa-eu-west-1
+      IamInstanceProfile: !Ref RedwineECSContainerRoleInstanceProfile
+      SecurityGroups:
+      - !Ref NFSSecurityGroup
+      UserData:
+        "Fn::Base64":
+          !Sub |
+            #!/bin/bash
+            sudo yum update -y
+            sudo yum install -y nfs-utils
+            sudo yum install -y aws-cfn-bootstrap
+            mkdir /efs
+            chown -R ec2-user:ec2-user /efs
+            sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 fs-4ac84583.efs.eu-west-1.amazonaws.com:/ /efs
+
+            echo ECS_CLUSTER=RedwineCluster >> /etc/ecs/ecs.config
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource RedwineScalingGroup --region ${AWS::Region}
+
+
+  RedwineTaskDefinition:
+    Type: "AWS::ECS::TaskDefinition"
+    Properties:
+      TaskRoleArn: !Ref RedwineECSTaskRole
+      ContainerDefinitions:
+        - Name: RedwineeContainerTest
+          Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
+          #Cpu: 20
+          MemoryReservation: 128
+          User: ec2-user
+          Environment:
+          - Name: ENV
+            Value: test
+          MountPoints:
+          - SourceVolume: efs-redwine-logs
+            ContainerPath: /home/ec2-user/redwine/logs
+      Volumes:
+      - Host:
+          SourcePath: /efs/test/redwine
+        Name: efs-redwine-logs
+
+  RedwineTestService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster: !Ref RedwineCluster
+      DesiredCount: 1
+      TaskDefinition: !Ref RedwineTaskDefinition
+      ServiceName: RedwineTest
+
+  SNSTestTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      Subscription:
+        - Endpoint: tmarin@beuwa.com
+          Protocol: email
+      TopicName: SNSTestTopic
+
+  SNSProdTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      Subscription:
+        - Endpoint: tmarin@beuwa.com
+          Protocol: email
+      TopicName: SNSProdTopic

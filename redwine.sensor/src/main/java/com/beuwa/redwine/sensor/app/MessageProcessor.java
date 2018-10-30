@@ -19,9 +19,14 @@ public class MessageProcessor {
     private Event<BusinessEvent> event;
 
     public void process(String message) {
-        BusinessEvent businessEvent = eventsFactory.build(message);
-        if(businessEvent != null) {
-            event.fire(businessEvent);
+        logger.debug(message);
+        BusinessEvent[] businessEvents = eventsFactory.build(message);
+        if(businessEvents != null) {
+            for(BusinessEvent businessEvent:businessEvents) {
+                if(businessEvent != null) {
+                    event.fire(businessEvent);
+                }
+            }
         }
     }
 }

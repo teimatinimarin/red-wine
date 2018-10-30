@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.core.events.LiquidationEvent;
+import com.beuwa.redwine.core.events.business.LiquidationEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;
@@ -11,6 +11,6 @@ public class LiquidationObserver {
     Logger logger;
 
     public void observe(@Observes LiquidationEvent event) {
-        logger.info( "Liquidation: {}", event.getMessage());
+        logger.debug( "Liquidation: {}", event.getMessage());
     }
 }

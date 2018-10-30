@@ -1,5 +1,7 @@
 package com.beuwa.redwine.core.config;
 
+import com.beuwa.redwine.core.config.beans.Properties;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
@@ -24,7 +26,11 @@ public class PropertiesFacade {
         properties = propertiesFactory.createProperties(secrets);
     }
 
-    public URI buildEndpoint() throws URISyntaxException {
+    public String getHttpsEndpoint() {
+        return "https://"+properties.getEndpoint();
+    }
+
+    public URI getWssEndpoint() throws URISyntaxException {
         String protocol = "wss";
         String host = properties.getEndpoint();
         int port = -1;
@@ -41,6 +47,26 @@ public class PropertiesFacade {
 
     public String getApiSecret() {
         return properties.getApiSecret();
+    }
+
+    public String getRedwineSns() {
+        return properties.getRedwineSns();
+    }
+
+    public boolean sendOpen() {
+        return "on".equalsIgnoreCase(properties.getNotifyOpen());
+    }
+
+    public boolean sendClose() {
+        return "on".equalsIgnoreCase(properties.getNotifyClose());
+    }
+
+    public long getRedwineSmaPeriod() {
+        return properties.getRedwineSmaPeriod();
+    }
+
+    public long getRedwineWarmupPeriod() {
+        return properties.getRedwineWarmupPeriod();
     }
 
     public boolean isEventInstrumentEnable() {
@@ -69,5 +95,25 @@ public class PropertiesFacade {
 
     public boolean isEventWalletEnable() {
         return properties.isEventWalletEnable();
+    }
+
+    public String getLeverage() {
+        return properties.getLeverage();
+    }
+
+    public long getMaxInvest() {
+        return Long.parseLong(properties.getMaxInvest());
+    }
+
+    public long getPercentageToInvest() {
+        return Long.parseLong(properties.getPercentageToInvest());
+    }
+
+    public boolean isRedwineTradingOn() {
+        return "on".equalsIgnoreCase(properties.getRedwineTrading());
+    }
+
+    public boolean isRedwineTrackingOn() {
+        return "on".equalsIgnoreCase(properties.getRedwineTracking());
     }
 }
