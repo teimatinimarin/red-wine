@@ -57,12 +57,6 @@
             <version>2.0</version>
         </dependency>
         <dependency>
-            <!-- Inject, Named, Qualifier, Scope, Singleton -->
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
             <!-- Generated, ManagedBean, PostConstruct, PreDestroy, Priority, Resource, Resources -->
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
