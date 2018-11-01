@@ -16,7 +16,7 @@ class BrokerDaoTest {
     private Logger logger;
 
     @Test
-    void open() throws Exception {
-        brokerDao.open();
+    void setLeverage() throws Exception {
+        brokerDao.setLeverage();
     }
 }
