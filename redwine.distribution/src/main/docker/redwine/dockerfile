@@ -27,4 +27,4 @@ RUN mkdir /home/ec2-user/redwine/logs && \
 
 USER ec2-user
 WORKDIR /home/ec2-user/redwine
-CMD ["./entrypoint-classpath.sh"]
+CMD ["./entrypoint.sh"]
