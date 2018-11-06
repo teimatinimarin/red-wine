@@ -12,7 +12,9 @@ phases:
     - mvn package
     - echo Building the Docker image...
     - docker build -t redwine ./redwine.distribution/target/redwine.distribution-1.0-SNAPSHOT-dist
+    - docker tag redwine:latest 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine:latest
   post_build:
     commands:
     - echo Pushing the Docker image...
-    - docker tag redwine:latest 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine:latest
+    - docker push 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine:latest
+
