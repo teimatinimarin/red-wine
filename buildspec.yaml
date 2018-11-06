@@ -11,7 +11,7 @@ phases:
     - echo Build started on `date`
     - mvn package
     - echo Building the Docker image...
-    - docker build -t redwine ./redwine.distribution/target/redwine.distribution-1.0-SNAPSHOT-dist/dockerfile
+    - docker build -t redwine ./redwine.distribution/target/redwine.distribution-1.0-SNAPSHOT-dist
   post_build:
     commands:
     - echo Pushing the Docker image...
