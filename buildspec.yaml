@@ -2,7 +2,7 @@ version: 0.2
 phases:
   pre_build:
     commands:
-    - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 &
+    - nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 &
     - sleep 5;
     - echo Logging in to Amazon ECR...
     - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
