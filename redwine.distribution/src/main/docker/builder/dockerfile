@@ -1,1 +1,5 @@
-# USE https://github.com/aws/aws-codebuild-docker-images/pull/140
+FROM teimatinimarin/base:latest
+
+RUN apt-get update && \
+    apt-get install -y maven docker.io && \
+    apt-get clean

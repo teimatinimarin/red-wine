@@ -17,4 +17,3 @@ phases:
     commands:
     - echo Pushing the Docker image...
     - docker push 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine:latest
-
