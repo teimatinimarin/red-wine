@@ -1,5 +1,5 @@
 FROM teimatinimarin/base:latest
 
 RUN apt-get update && \
-    apt-get install -y maven docker.io && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y maven docker.io awscli && \
     apt-get clean
