@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   Creates Sensor Resources
+Parameters:
+  GithubToken:
+    Description: "Github OAuth Token"
+    Type: String
 Resources:
 
   # This CloudFormation template creates:
@@ -10,8 +14,8 @@ Resources:
   #    Elastic File System that can be shared between multiple EC2 instances and docker containers
 
   # Execute this by:
-  # aws cloudformation create-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml
-  # aws cloudformation update-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml
+  # aws cloudformation create-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml --parameters ParameterKey=GithubToken,ParameterValue=TOKEN
+  # aws cloudformation update-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml --parameters ParameterKey=GithubToken,ParameterValue=TOKEN
 
   RedwineHub:
     Type: "AWS::ECR::Repository"
@@ -24,3 +28,85 @@ Resources:
       FileSystemTags:
       - Key: Name
         Value: SensorNFS
+
+  RedwineS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: redwine.beuwa.com
+
+  RedwinePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: arn:aws:iam::432127854945:role/service-role/AWSCodePipelineServiceRole-eu-west-1-TM
+      Stages:
+      - Name: Source
+        Actions:
+        - Name: SourceAction
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Provider: GitHub
+            Version: 1
+          OutputArtifacts:
+          - Name: SourceArtifact
+          Configuration:
+            Owner: teimatinimarin
+            Repo: red-wine
+            PollForSourceChanges: false
+            Branch: red-wine-34
+            OAuthToken: !Ref GithubToken
+          RunOrder: 1
+
+
+      - Name: Build
+        Actions:
+        - Name: Build
+          InputArtifacts:
+          - Name: SourceArtifact
+          OutputArtifacts:
+          - Name: BuildArtifact
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Provider: CodeBuild
+            Version: 1
+          Configuration:
+            ProjectName: TM
+          RunOrder: 1
+
+      - Name: Deploy
+        Actions:
+          - Name: DeployCF
+            InputArtifacts:
+            - Name: SourceArtifact
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: CloudFormation
+              Version: 1
+            Configuration:
+              ActionMode: CREATE_UPDATE
+              Capabilities: CAPABILITY_NAMED_IAM
+              RoleArn: arn:aws:iam::432127854945:role/CloudFormationRole
+              StackName: redwine-stack
+              TemplatePath: SourceArtifact::redwine.distribution/src/main/cloudformation/application.yml
+              TemplateConfiguration: SourceArtifact::redwine.distribution/src/main/cloudformation/application-configuration.json
+            RunOrder: 1
+          - Name: DeployECS
+            InputArtifacts:
+              - Name: SourceArtifact
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: ECS
+              Version: 1
+            Configuration:
+              ClusterName: RedwineCluster
+              ServiceName: RedwineTest
+              FileName: imagedefinitions.json
+            RunOrder: 2
+
+
+      ArtifactStore:
+        Type: S3
+        Location: !Ref RedwineS3Bucket
