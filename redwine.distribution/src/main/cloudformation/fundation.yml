@@ -118,7 +118,7 @@ Resources:
             Owner: teimatinimarin
             Repo: red-wine
             PollForSourceChanges: false
-            Branch: red-wine-34
+            Branch: master
             OAuthToken: !Ref GithubToken
           RunOrder: 1
       - Name: Build
