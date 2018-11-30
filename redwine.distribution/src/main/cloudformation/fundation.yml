@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Creates Sensor Resources
+Resources:
+
+  # This CloudFormation template creates:
+  # 1: ECR Repository
+  #    This docker repo stores redwine image
+  # 2: Elastic File System
+  #    Elastic File System that can be shared between multiple EC2 instances and docker containers
+
+  # Execute this by:
+  # aws cloudformation create-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml
+  # aws cloudformation update-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml
+
+  RedwineHub:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "redwine"
+
+  SensorNFS:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      FileSystemTags:
+      - Key: Name
+        Value: SensorNFS

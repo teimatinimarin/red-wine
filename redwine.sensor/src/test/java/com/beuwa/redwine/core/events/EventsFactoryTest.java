@@ -1,5 +1,6 @@
 package com.beuwa.redwine.core.events;
 
+import com.beuwa.redwine.core.events.business.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,49 +29,69 @@ class EventsFactoryTest {
         byte[] content = Files.readAllBytes(path);
         String message = new String(content);
 
-        BusinessEvent event = eventsFactory.build(message);
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof InstrumentEvent);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "liquidation-event.json",delimiter = '^')
     void createLiquidationEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof LiquidationEvent);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "order-event.json",delimiter = '^')
-    void createOrderEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
+    void createOrderEventNew(String message) {
+        BusinessEvent[] events = eventsFactory.build(message);
+        assertTrue(events[0] instanceof OrderEvent);
+        assertTrue(events[1] instanceof OrderEvent);
+        assertTrue(events[2] instanceof OrderEvent);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "order-event-parent-cancelled.json",delimiter = '^')
+    void createOrderEventParentCancelled(String message) {
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof OrderEvent);
+        assertEquals("Canceled", ((OrderEvent)event).getOrderStatus());
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "order-event-children-cancelled.json",delimiter = '^')
+    void createOrderEventChildrenCancelled(String message) {
+        BusinessEvent[] events = eventsFactory.build(message);
+        assertTrue(events[0] instanceof OrderEvent);
+        assertEquals("Canceled", ((OrderEvent)events[0]).getOrderStatus());
+        assertTrue(events[1] instanceof OrderEvent);
+        assertEquals("Canceled", ((OrderEvent)events[1]).getOrderStatus());
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "position-event.json",delimiter = '^')
     void createPositionEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof PositionEvent);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "quote-event.json",delimiter = '^')
     void createQuoteEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof QuoteEvent);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "trade-event.json",delimiter = '^')
     void createTradeEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof TradeEvent);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "wallet-event.json",delimiter = '^')
     void createWalletEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
+        BusinessEvent event = eventsFactory.build(message)[0];
         assertTrue(event instanceof WalletEvent);
 
         WalletEvent walletEvent = (WalletEvent)event;
@@ -80,14 +101,14 @@ class EventsFactoryTest {
     @ParameterizedTest
     @CsvFileSource(resources = "invalid-event.json",delimiter = '^')
     void createInvalidEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
-        assertNull(event);
+        BusinessEvent[] events = eventsFactory.build(message);
+        assertNull(events);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "no-table-property-event.json",delimiter = '^')
     void createNoTablePropertyEvent(String message) {
-        BusinessEvent event = eventsFactory.build(message);
-        assertNull(event);
+        BusinessEvent[] events = eventsFactory.build(message);
+        assertNull(events);
     }
 }

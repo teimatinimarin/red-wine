@@ -30,7 +30,7 @@ public class Initializer {
     public void init(@Observes BootEvent bootEvent, CountDownLatch latch) {
         logger.info("Init...");
         try {
-            URI uri = propertiesFacade.buildEndpoint();
+            URI uri = propertiesFacade.getWssEndpoint();
             client.connectToServer(listener, uri);
             latch.await();
         } catch (DeploymentException | URISyntaxException | IOException e) {

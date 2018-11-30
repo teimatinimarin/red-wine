@@ -1,5 +1,6 @@
 package com.beuwa.redwine.strategy.sma.statistics;
 
+import com.beuwa.redwine.core.config.PropertiesFacade;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WindowMapTest {
@@ -19,8 +21,15 @@ class WindowMapTest {
     @Mock
     private Logger logger;
 
+    @Mock
+    private PropertiesFacade propertiesFacade;
+
     @Test
     void put() {
+        when( propertiesFacade.getRedwineSmaPeriod() ).thenReturn( 300000L );
+        when( propertiesFacade.getRedwineWarmupPeriod() ).thenReturn( 3600000L );
+        windowMap.init();
+
         long epoch = Instant.now().toEpochMilli();
         windowMap.put(epoch - 300001, 100L);
         windowMap.put(epoch + 0, 100L);

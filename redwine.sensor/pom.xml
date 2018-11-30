@@ -18,9 +18,36 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.0</version>
+                    <configuration>
+                        <skipTests>false</skipTests>
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <forkMode>once</forkMode>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>
@@ -28,12 +55,6 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>2.0</version>
-        </dependency>
-        <dependency>
-            <!-- Inject, Named, Qualifier, Scope, Singleton -->
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
         </dependency>
         <dependency>
             <!-- Generated, ManagedBean, PostConstruct, PreDestroy, Priority, Resource, Resources -->
@@ -44,7 +65,7 @@
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-se</artifactId>
-            <version>2.0.5</version>
+            <version>2.0.7</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -91,6 +112,11 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>secretsmanager</artifactId>
+            <version>2.0.0-preview-10</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
             <version>2.0.0-preview-10</version>
         </dependency>
 

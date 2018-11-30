@@ -1,0 +1,30 @@
+# https://hub.docker.com/r/teimatinimarin/redwine/
+# docker login
+# docker build -t teimatinimarin/redwine:1 .
+# docker push teimatinimarin/redwine
+
+FROM ubuntu:18.04
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y wget
+
+# Install Java
+RUN wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz && sha256sum openjdk-11.0.1_linux-x64_bin.tar.gz
+RUN mkdir -p /opt/java && \
+    tar -xf openjdk-11.0.1_linux-x64_bin.tar.gz --directory /opt/java && \
+    rm openjdk-11.0.1_linux-x64_bin.tar.gz
+ENV JAVA_HOME=/opt/java/jdk-11.0.1
+ENV PATH=$PATH:/opt/java/jdk-11.0.1/bin
+
+# Add user and group
+RUN groupadd --gid 500 ec2-user && \
+    useradd -ms /bin/bash --uid 500 --gid 500 ec2-user
+
+# Install Redwine
+COPY . /home/ec2-user/redwine
+RUN mkdir /home/ec2-user/redwine/logs && \
+    chown -R ec2-user:ec2-user /home/ec2-user/redwine && \
+    chmod 700 /home/ec2-user/redwine/entrypoint*
+
+USER ec2-user
+WORKDIR /home/ec2-user/redwine
+CMD ["./entrypoint.sh"]

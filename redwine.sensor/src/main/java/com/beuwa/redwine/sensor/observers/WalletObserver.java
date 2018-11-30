@@ -1,6 +1,6 @@
 package com.beuwa.redwine.sensor.observers;
 
-import com.beuwa.redwine.core.events.WalletEvent;
+import com.beuwa.redwine.core.events.business.WalletEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;
@@ -11,6 +11,6 @@ public class WalletObserver {
     Logger logger;
 
     public void observe(@Observes WalletEvent event) {
-        logger.info("Wallet amount: {}", event.getAmount());
+        logger.debug("Wallet amount: {}", event.getAmount());
     }
 }

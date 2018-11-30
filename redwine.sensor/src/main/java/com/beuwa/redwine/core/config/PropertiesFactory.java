@@ -1,12 +1,14 @@
 package com.beuwa.redwine.core.config;
 
+import com.beuwa.redwine.core.config.beans.Properties;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
 
 public class PropertiesFactory {
-    public  Properties createProperties(String secrets) {
+    public Properties createProperties(String secrets) {
         try(JsonReader jsonReader = Json.createReader( new StringReader(secrets) )) {
             JsonObject jsonObject = jsonReader.readObject();
 
@@ -14,11 +16,16 @@ public class PropertiesFactory {
                     .endpoint(jsonObject.getString("endpoint"))
                     .apiKey(jsonObject.getString("api_key"))
                     .apiSecret(jsonObject.getString("api_secret"))
-                    .trading(jsonObject.getString("trading"))
-                    .leverage(jsonObject.getString("leverage"))
+                    .redwineTrading(jsonObject.getString("redwine.trading"))
+                    .redwineTracking(jsonObject.getString("redwine.tracking"))
+                    .redwineSns(jsonObject.getString("redwine.sns"))
                     .notifyOpen(jsonObject.getString("open_email"))
                     .notifyClose(jsonObject.getString("close_email"))
-                    .maxInvest(jsonObject.getString("max_invest"))
+                    .maxInvest(jsonObject.getString("trade.contracts.max"))
+                    .leverage(jsonObject.getString("trade.contracts.leverage"))
+                    .percentageToInvest(jsonObject.getString("trade.invest.percentage"))
+                    .redwineSmaPeriod(jsonObject.getJsonNumber("redwine.sma.period").longValue())
+                    .redwineWarmupPeriod(jsonObject.getJsonNumber("redwine.warmup.period").longValue())
                     .eventInstrumentEnable(Boolean.valueOf(jsonObject.getString("event.instrument.enable")))
                     .eventLiquidationEnable(Boolean.valueOf(jsonObject.getString("event.liquidation.enable")))
                     .eventOrderEnable(Boolean.valueOf(jsonObject.getString("event.order.enable")))

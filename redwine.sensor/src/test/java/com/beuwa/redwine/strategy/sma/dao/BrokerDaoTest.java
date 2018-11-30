@@ -7,8 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 class BrokerDaoTest {
     @InjectMocks
@@ -18,7 +16,7 @@ class BrokerDaoTest {
     private Logger logger;
 
     @Test
-    void open() throws Exception {
-        brokerDao.open();
+    void setLeverage() throws Exception {
+        brokerDao.setLeverage();
     }
 }

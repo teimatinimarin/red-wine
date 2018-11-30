@@ -17,7 +17,7 @@ public class Signer {
     @Inject
     private PropertiesFacade propertiesFacade;
 
-    public String encode(String verb, String path, long expires, String data) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+    public String sign(String verb, String path, long expires, String data) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         String key = propertiesFacade.getApiSecret();
 
         byte[] bytes = key.getBytes(CHARSET);

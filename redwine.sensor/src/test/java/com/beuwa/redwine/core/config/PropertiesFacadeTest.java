@@ -1,5 +1,6 @@
 package com.beuwa.redwine.core.config;
 
+import com.beuwa.redwine.core.config.beans.Properties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +23,7 @@ class PropertiesFacadeTest {
     @Test
     void getEndpoint() throws Exception {
         Mockito.when(properties.getEndpoint()).thenReturn( "domain.com" );
-        URI uri = propertiesFacade.buildEndpoint();
+        URI uri = propertiesFacade.getWssEndpoint();
 
         assertEquals(
                 "wss://domain.com/realtime",
