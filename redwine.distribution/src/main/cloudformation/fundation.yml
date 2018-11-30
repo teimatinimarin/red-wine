@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   Creates Sensor Resources
+Parameters:
+  GithubToken:
+    Description: "Github OAuth Token"
+    Type: String
 Resources:
 
   # This CloudFormation template creates:
@@ -8,10 +12,18 @@ Resources:
   #    This docker repo stores redwine image
   # 2: Elastic File System
   #    Elastic File System that can be shared between multiple EC2 instances and docker containers
+  # 3: S3 Bucket
+  #    S3 Bucket used for CICD Pipeline
+  # 4: Code Build Project and IAM Role
+  #    Builds this project in AWS Code Build
+  # 5: AWS Pipeline and IAM Role
+  #    CICD AWS Pipeline for this project
+  # 6: Cloudformation Role
+  #    Role used for CloudFormation to create Resources as part of this CICD Pipeline
 
   # Execute this by:
-  # aws cloudformation create-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml
-  # aws cloudformation update-stack --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml
+  # aws cloudformation create-stack --capabilities CAPABILITY_IAM --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml --parameters ParameterKey=GithubToken,ParameterValue=TOKEN
+  # aws cloudformation update-stack --capabilities CAPABILITY_IAM --stack-name fundation --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/fundation.yml --parameters ParameterKey=GithubToken,ParameterValue=TOKEN
 
   RedwineHub:
     Type: "AWS::ECR::Repository"
@@ -24,3 +36,192 @@ Resources:
       FileSystemTags:
       - Key: Name
         Value: SensorNFS
+
+  RedwineS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: redwine.beuwa.com
+
+  RedwineCodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: RedwineCodeBuildProject
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: teimatinimarin/builder
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [codebuild.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      Policies:
+      - PolicyName: CodeBuildAccess
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Resource:
+                - "arn:aws:logs:eu-west-1:432127854945:log-group:/aws/codebuild/RedwineCodeBuildProject"
+                - "arn:aws:logs:eu-west-1:432127854945:log-group:/aws/codebuild/RedwineCodeBuildProject:*"
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+            - Effect: Allow
+              Resource: "arn:aws:s3:::redwine.beuwa.com/*"
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:GetObjectVersion
+            - Effect: Allow
+              Resource: '*'
+              Action:
+                - ecr:BatchCheckLayerAvailability
+                - ecr:CompleteLayerUpload
+                - ecr:GetAuthorizationToken
+                - ecr:InitiateLayerUpload
+                - ecr:PutImage
+                - ecr:UploadLayerPart
+
+  RedwinePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: RedwinePipeline
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+      - Name: Source
+        Actions:
+        - Name: SourceAction
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Provider: GitHub
+            Version: 1
+          OutputArtifacts:
+          - Name: SourceArtifact
+          Configuration:
+            Owner: teimatinimarin
+            Repo: red-wine
+            PollForSourceChanges: false
+            Branch: red-wine-34
+            OAuthToken: !Ref GithubToken
+          RunOrder: 1
+      - Name: Build
+        Actions:
+        - Name: Build
+          InputArtifacts:
+          - Name: SourceArtifact
+          OutputArtifacts:
+          - Name: BuildArtifact
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Provider: CodeBuild
+            Version: 1
+          Configuration:
+            ProjectName: RedwineCodeBuildProject
+          RunOrder: 1
+      - Name: Deploy
+        Actions:
+          - Name: DeployCF
+            InputArtifacts:
+            - Name: SourceArtifact
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: CloudFormation
+              Version: 1
+            Configuration:
+              ActionMode: CREATE_UPDATE
+              Capabilities: CAPABILITY_NAMED_IAM
+              RoleArn: !GetAtt CloudformationRole.Arn
+              StackName: redwine-stack
+              TemplatePath: SourceArtifact::redwine.distribution/src/main/cloudformation/application.yml
+              TemplateConfiguration: SourceArtifact::redwine.distribution/src/main/cloudformation/application-configuration.json
+            RunOrder: 1
+          - Name: DeployECS
+            InputArtifacts:
+              - Name: SourceArtifact
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: ECS
+              Version: 1
+            Configuration:
+              ClusterName: RedwineCluster
+              ServiceName: RedwineTest
+              FileName: imagedefinitions.json
+            RunOrder: 2
+      ArtifactStore:
+        Type: S3
+        Location: !Ref RedwineS3Bucket
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: ['sts:AssumeRole']
+            Effect: Allow
+            Principal:
+              Service: [codepipeline.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      Policies:
+        - PolicyName: CodePipelineAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Resource:
+                  - "*"
+                Action:
+                  - iam:PassRole
+                Condition:
+                  StringEqualsIfExists:
+                    iam:PassedToService:
+                      - cloudformation.amazonaws.com
+                      - ecs-tasks.amazonaws.com
+              - Effect: Allow
+                Resource:
+                  - "*"
+                Action:
+                  - cloudwatch:*
+                  - s3:*
+                  - ecs:*
+                  - ecr:*
+                  - cloudformation:*
+                  - codebuild:*
+
+  CloudformationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [cloudformation.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+        - arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonECS_FullAccess
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
