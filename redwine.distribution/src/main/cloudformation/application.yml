@@ -19,13 +19,13 @@ Resources:
   # aws cloudformation delete-stack --stack-name redwine-stack
 
   ClusterVPC:
-      Type: AWS::EC2::VPC
-      Properties:
-        CidrBlock: 10.0.0.0/24
-        EnableDnsSupport: true   # Needed for ACS Agent and cfn-signal
-        EnableDnsHostnames: true # Needed to mount EFS
-        InstanceTenancy: default
-        Tags:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/24
+      EnableDnsSupport: true   # Needed for ACS Agent and cfn-signal
+      EnableDnsHostnames: true # Needed to mount EFS
+      InstanceTenancy: default
+      Tags:
         - Key: Name
           Value: ClusterVPC
 
@@ -37,13 +37,13 @@ Resources:
       AvailabilityZone: eu-west-1a
       MapPublicIpOnLaunch: true
       Tags:
-      - Key: Name
-        Value: ClusterSubnet
+        - Key: Name
+          Value: ClusterSubnet
 
 
   # Internet Access
   ClusterInternetGateway:
-    Type: "AWS::EC2::InternetGateway"
+    Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
       - Key: Name
@@ -89,7 +89,7 @@ Resources:
         ToPort: 22
         CidrIp: 0.0.0.0/0
   NFSSecurityGroupIngress:
-      Type: 'AWS::EC2::SecurityGroupIngress'
+      Type: AWS::EC2::SecurityGroupIngress
       DependsOn: NFSSecurityGroup
       Properties:
         GroupId: !Ref NFSSecurityGroup
@@ -100,12 +100,12 @@ Resources:
 
   # Mount EFS
   MountTarget:
-    Type: "AWS::EFS::MountTarget"
+    Type: AWS::EFS::MountTarget
     Properties:
       FileSystemId: !Ref NFS
       SubnetId: !Ref ClusterSubnet
       SecurityGroups:
-      - !Ref NFSSecurityGroup
+        - !Ref NFSSecurityGroup
 
   # Roles
   RedwineECSContainerRole:
@@ -125,7 +125,7 @@ Resources:
           Action:
           - sts:AssumeRole
   RedwineECSContainerRoleInstanceProfile:
-    Type: "AWS::IAM::InstanceProfile"
+    Type: AWS::IAM::InstanceProfile
     Properties:
       Path: "/"
       Roles:
@@ -146,7 +146,7 @@ Resources:
             Action:
             - sts:AssumeRole
   RedwineECSTaskPolicies:
-    Type: "AWS::IAM::Policy"
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: "root"
       PolicyDocument:
@@ -163,7 +163,7 @@ Resources:
 
   # ECS
   RedwineCluster:
-    Type: "AWS::ECS::Cluster"
+    Type: AWS::ECS::Cluster
     Properties:
       ClusterName: RedwineCluster
 
@@ -218,7 +218,7 @@ Resources:
 
 
   RedwineTaskDefinition:
-    Type: "AWS::ECS::TaskDefinition"
+    Type: AWS::ECS::TaskDefinition
     Properties:
       TaskRoleArn: !Ref RedwineECSTaskRole
       ContainerDefinitions:
@@ -239,7 +239,7 @@ Resources:
         Name: efs-redwine-logs
 
   RedwineTestService:
-    Type: 'AWS::ECS::Service'
+    Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref RedwineCluster
       DesiredCount: 1
@@ -247,7 +247,7 @@ Resources:
       ServiceName: RedwineTest
 
   SNSTestTopic:
-    Type: "AWS::SNS::Topic"
+    Type: AWS::SNS::Topic
     Properties:
       Subscription:
         - Endpoint: tmarin@beuwa.com
@@ -255,7 +255,7 @@ Resources:
       TopicName: SNSTestTopic
 
   SNSProdTopic:
-    Type: "AWS::SNS::Topic"
+    Type: AWS::SNS::Topic
     Properties:
       Subscription:
         - Endpoint: tmarin@beuwa.com

@@ -3,17 +3,7 @@
 # docker build -t teimatinimarin/redwine:1 .
 # docker push teimatinimarin/redwine
 
-FROM ubuntu:18.04
-
-RUN apt-get update && apt-get upgrade -y && apt-get install -y wget
-
-# Install Java
-RUN wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz && sha256sum openjdk-11.0.1_linux-x64_bin.tar.gz
-RUN mkdir -p /opt/java && \
-    tar -xf openjdk-11.0.1_linux-x64_bin.tar.gz --directory /opt/java && \
-    rm openjdk-11.0.1_linux-x64_bin.tar.gz
-ENV JAVA_HOME=/opt/java/jdk-11.0.1
-ENV PATH=$PATH:/opt/java/jdk-11.0.1/bin
+FROM teimatinimarin/base:latest
 
 # Add user and group
 RUN groupadd --gid 500 ec2-user && \
