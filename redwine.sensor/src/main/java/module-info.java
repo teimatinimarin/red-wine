@@ -10,8 +10,6 @@ module redwine.sensor {
     requires org.glassfish.java.json;
 
     // Websocket Client
-    requires tyrus.client;
-    requires javax.websocket.api;
     requires java.net.http;
 
     // Logging

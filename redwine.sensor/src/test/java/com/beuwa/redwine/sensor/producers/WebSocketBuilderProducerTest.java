@@ -1,21 +1,22 @@
 package com.beuwa.redwine.sensor.producers;
 
-import org.glassfish.tyrus.client.ClientManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.net.http.WebSocket;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class ClientManagerProducerTest {
+class WebSocketBuilderProducerTest {
     @InjectMocks
-    ClientManagerProducer clientManagerProducer;
+    WebSocketBuilderProducer clientManagerProducer;
 
     @Test
     void createWebSocketClient() {
-        ClientManager client = clientManagerProducer.createWebSocketClient();
+        WebSocket.Builder client = clientManagerProducer.createWebSocketClient();
         assertNotNull(client);
     }
 }
