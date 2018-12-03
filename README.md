@@ -2,7 +2,10 @@
 This is a personal repo where I pretended to put in practice many concepts, frameworks and technologies that I've been interested to play with for a long time.
 
 Some of those are:
-* Java 10 new characteristics. Including Java 9 modules.
+* Java 9 to 11 new features, including:
+  * Module System (JSR 376)
+  * Local-Variable Type Inference (JEP-323)
+  * Native WebSocket support (JEP-321)
 * Websocket clients in JAVA
 * Docker
 * Amazon fun staff, like ECS, Cloudformation, DynamoDB, SNS, etc

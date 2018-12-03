@@ -1,18 +1,16 @@
 package com.beuwa.redwine.sensor.app;
 
-
 import com.beuwa.redwine.core.config.PropertiesFacade;
 import com.beuwa.redwine.core.events.BootEvent;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.tyrus.client.ClientManager;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.websocket.DeploymentException;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.WebSocket;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class Initializer {
     @Inject
@@ -22,18 +20,20 @@ public class Initializer {
     private PropertiesFacade propertiesFacade;
 
     @Inject
-    private ClientManager client;
+    WebSocketClientListener listener;
 
     @Inject
-    WebClientListener listener;
+    WebSocket.Builder websocketBuilder;
+
 
     public void init(@Observes BootEvent bootEvent, CountDownLatch latch) {
         logger.info("Init...");
         try {
             URI uri = propertiesFacade.getWssEndpoint();
-            client.connectToServer(listener, uri);
+            listener.setLatch(latch);
+            websocketBuilder.buildAsync(uri, listener).get();
             latch.await();
-        } catch (DeploymentException | URISyntaxException | IOException e) {
+        } catch (URISyntaxException | ExecutionException e) {
             logger.error("OOOPS! {}", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
