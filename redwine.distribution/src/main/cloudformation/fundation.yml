@@ -225,3 +225,18 @@ Resources:
         - arn:aws:iam::aws:policy/IAMFullAccess
         - arn:aws:iam::aws:policy/AmazonECS_FullAccess
         - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+
+  CodePipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      AuthenticationConfiguration:
+        SecretToken: !Ref GithubToken
+      Filters:
+        - JsonPath: "$.ref"
+          MatchEquals: refs/heads/{Branch}
+      Authentication: GITHUB_HMAC
+      TargetPipeline: !Ref RedwinePipeline
+      TargetAction: SourceAction
+      Name: RedwineWebhook
+      TargetPipelineVersion: !GetAtt RedwinePipeline.Version
+      RegisterWithThirdParty: true
