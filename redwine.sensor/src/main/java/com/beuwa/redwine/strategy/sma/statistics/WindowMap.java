@@ -46,6 +46,7 @@ public class WindowMap {
         values.put(epoch, price);
 
         // Purge old prices from values
+        logger.info("ket: {}, epoch: {}, result: {}", values.firstKey().longValue(),  epoch.longValue(), (epoch.longValue() - smaPeriod), (values.firstKey().longValue() < epoch.longValue() - smaPeriod));
         while (values.firstKey().longValue() < epoch.longValue() - smaPeriod) {
             values.remove(values.firstKey());
 

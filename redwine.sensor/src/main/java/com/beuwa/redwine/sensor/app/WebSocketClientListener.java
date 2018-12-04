@@ -74,9 +74,10 @@ public class WebSocketClientListener implements WebSocket.Listener {
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        logger.info("WebSocket Listener has been closed with statusCode(" + statusCode + ").");
-        logger.info("Cause: " + reason);
+        logger.error("Closed: {}", statusCode);
+        logger.error("Cause: {}", reason);
         webSocket.sendClose(statusCode, reason);
+        latch.countDown();
         return null;
     }
 
