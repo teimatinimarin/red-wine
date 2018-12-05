@@ -83,7 +83,7 @@ public class WebSocketClientListener implements WebSocket.Listener {
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        logger.info("Message: " + error.getLocalizedMessage());
+        logger.error("Message: " + error.getLocalizedMessage());
         webSocket.abort();
         latch.countDown();
     }
