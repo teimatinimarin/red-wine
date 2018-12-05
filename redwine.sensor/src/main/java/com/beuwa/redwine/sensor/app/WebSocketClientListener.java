@@ -67,7 +67,7 @@ public class WebSocketClientListener implements WebSocket.Listener {
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
         webSocket.request(1);
-        logger.info(data);
+        logger.info(String.format("Last: {}, Message: {}", last, data));
         messageProcessor.process(data.toString());
         return null;
     }
