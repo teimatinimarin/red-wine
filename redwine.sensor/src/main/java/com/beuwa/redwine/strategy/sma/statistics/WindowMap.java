@@ -46,7 +46,6 @@ public class WindowMap {
         values.put(epoch, price);
 
         // Purge old prices from values
-        logger.info("key: {}, epoch: {}, result: {}", values.firstKey().longValue(),  epoch.longValue(), (values.firstKey().longValue() < epoch.longValue() - smaPeriod));
         while (values.firstKey().longValue() < epoch.longValue() - smaPeriod) {
             values.remove(values.firstKey());
 
@@ -61,6 +60,7 @@ public class WindowMap {
             smaCurrent = (long) values.values().stream().mapToLong(l -> l.longValue()).average().getAsDouble();
             smas.put(epoch, smaCurrent);
 
+            logger.debug("key: {}, epoch: {}, period: {}, result: {}", values.firstKey().longValue(),  epoch.longValue(), warmupPeriod, (values.firstKey().longValue() < epoch.longValue() - warmupPeriod));
             while (smas.firstKey().longValue() < epoch.longValue() - warmupPeriod) {
                 smas.remove(smas.firstKey());
 
