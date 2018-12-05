@@ -19,18 +19,20 @@ public class WebSocketClientListener implements WebSocket.Listener {
     private Logger logger;
 
     @Inject
-    PropertiesFacade propertiesFacade;
+    private PropertiesFacade propertiesFacade;
 
     @Inject
-    Signer signer;
+    private Signer signer;
 
     @Inject
-    MessageProcessor messageProcessor;
+    private MessageProcessor messageProcessor;
 
     @Inject
-    SubscribeUtils subscribeUtils;
+    private SubscribeUtils subscribeUtils;
 
-    CountDownLatch latch;
+    private CountDownLatch latch;
+    private boolean multiPart = false;
+    private StringBuilder parts = new StringBuilder();
 
     public void setLatch(CountDownLatch latch) {
         this.latch = latch;
@@ -68,7 +70,21 @@ public class WebSocketClientListener implements WebSocket.Listener {
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
         webSocket.request(1);
         logger.info("Last: {}, Message: {}", last, data);
-        messageProcessor.process(data.toString());
+        if(!last) {
+            multiPart = true;
+            parts.append(data.toString());
+        }
+        if(last) {
+            if(multiPart) {
+                parts.append(data.toString());
+                messageProcessor.process(parts.toString());
+                parts = new StringBuilder();
+                multiPart = false;
+            } else {
+                messageProcessor.process(data.toString());
+            }
+        }
+
         return null;
     }
 
