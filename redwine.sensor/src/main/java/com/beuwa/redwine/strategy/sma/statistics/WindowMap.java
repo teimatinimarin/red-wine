@@ -60,7 +60,6 @@ public class WindowMap {
             smaCurrent = (long) values.values().stream().mapToLong(l -> l.longValue()).average().getAsDouble();
             smas.put(epoch, smaCurrent);
 
-            logger.debug("key: {}, epoch: {}, period: {}, result: {}", smas.firstKey().longValue(),  epoch.longValue(), warmupPeriod, (smas.firstKey().longValue() < epoch.longValue() - warmupPeriod));
             while (smas.firstKey().longValue() < epoch.longValue() - warmupPeriod) {
                 smas.remove(smas.firstKey());
 

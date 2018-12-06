@@ -21,7 +21,7 @@ module redwine.sensor {
     requires sns;
     requires regions;
 
-    exports com.beuwa.redwine.sensor.app to tyrus.core;
+    exports com.beuwa.redwine.strategy.sma.status to openwebbeans.impl;
 
     // Temporal for junit in intellij
     opens com.beuwa.redwine.sensor;
