@@ -244,8 +244,8 @@ Resources:
             - Name: ENV
               Value: test
           MountPoints:
-            -SourceVolume: efs-redwine-2
-            ContainerPath: /home/ec2-user/redwine/logs
+            - SourceVolume: efs-redwine-2
+              ContainerPath: /home/ec2-user/redwine/logs
       Volumes:
         - Host:
             SourcePath: /efs/test/redwine-1
