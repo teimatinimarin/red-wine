@@ -99,7 +99,10 @@ public class WebSocketClientListener implements WebSocket.Listener {
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        logger.error("Message: " + error.getLocalizedMessage());
+        logger.error("onError Message: {} ", error.getMessage());
+        logger.error("onError Cause: {}", error.getCause());
+        logger.error("onError input Closed?: {}", webSocket.isInputClosed());
+        logger.error("onError output Closed?: {}", webSocket.isOutputClosed());
         webSocket.abort();
         latch.countDown();
     }

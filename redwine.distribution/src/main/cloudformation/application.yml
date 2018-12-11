@@ -201,7 +201,7 @@ Resources:
       KeyName: beuwa-eu-west-1
       IamInstanceProfile: !Ref RedwineECSContainerRoleInstanceProfile
       SecurityGroups:
-      - !Ref NFSSecurityGroup
+        - !Ref NFSSecurityGroup
       UserData:
         "Fn::Base64":
           !Sub |
@@ -210,6 +210,9 @@ Resources:
             sudo yum install -y nfs-utils
             sudo yum install -y aws-cfn-bootstrap
             mkdir /efs
+            mkdir /efs/test
+            mkdir /efs/test/redwine-1
+            mkdir /efs/test/redwine-2
             chown -R ec2-user:ec2-user /efs
             sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 fs-4ac84583.efs.eu-west-1.amazonaws.com:/ /efs
 
@@ -222,21 +225,34 @@ Resources:
     Properties:
       TaskRoleArn: !Ref RedwineECSTaskRole
       ContainerDefinitions:
-        - Name: RedwineeContainerTest
+        - Name: RedwineContainerTest-1
           Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
           #Cpu: 20
           MemoryReservation: 128
           User: ec2-user
           Environment:
-          - Name: ENV
-            Value: test
+            - Name: ENV
+              Value: test
           MountPoints:
-          - SourceVolume: efs-redwine-logs
+            - SourceVolume: efs-redwine-1
+              ContainerPath: /home/ec2-user/redwine/logs
+        - Name: RedwineContainerTest-2
+          Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
+          MemoryReservation: 128
+          User: ec2-user
+          Environment:
+            - Name: ENV
+              Value: test
+          MountPoints:
+            -SourceVolume: efs-redwine-2
             ContainerPath: /home/ec2-user/redwine/logs
       Volumes:
-      - Host:
-          SourcePath: /efs/test/redwine
-        Name: efs-redwine-logs
+        - Host:
+            SourcePath: /efs/test/redwine-1
+          Name: efs-redwine-1
+        - Host:
+            SourcePath: /efs/test/redwine-2
+          Name: efs-redwine-2
 
   RedwineTestService:
     Type: AWS::ECS::Service
