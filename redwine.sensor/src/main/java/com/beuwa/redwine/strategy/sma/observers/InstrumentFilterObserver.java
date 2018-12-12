@@ -23,7 +23,7 @@ public class InstrumentFilterObserver {
             event.fire(new MarketPriceFilteredEvent(epoch, instrumentEvent.getMarkPrice()));
         }
 
-        logger.debug(
+        logger.info(
                 "Instrument XBTUSD: Opened: {}, TurnOver24Hrs: {}, Value24Hrs: {}, BidPrice: {}, AskPrice:{}, MarketPrice: {}",
                 instrumentEvent.getOpenInterest(),
                 instrumentEvent.getTurnover24H(),

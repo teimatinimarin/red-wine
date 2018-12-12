@@ -31,20 +31,20 @@ public class BrokerDao {
         logger.debug(responseLeverage.body());
     }
 
-    public void createOrder(double simpleOrderQty, double triggerPrice, double takeProfitPrice, double stopLossPrice, String stopLossSide) {
+    public void createOrder(double orderQty, double triggerPrice, double takeProfitPrice, double stopLossPrice, String stopLossSide) {
         var ordLinkId = UUID.randomUUID().toString().substring(24, 36);
         String pathOrder = "/api/v1/order/bulk";
         String bodyOrderTemplate = "{\"orders\":[" +
-                "{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"stopPx\":%.2f,\"simpleOrderQty\":%.8f,\"execInst\":\"LastPrice\",\"contingencyType\":\"OneTriggersTheOther\"}" +
-                ",{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"price\":%.2f,\"simpleLeavesQty\":0,\"execInst\":\"Close\",\"contingencyType\":\"OneCancelsTheOther\"}" +
-                ",{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"side\":\"%s\",\"stopPx\":%.2f,\"simpleLeavesQty\":0,\"execInst\":\"LastPrice,Close\",\"contingencyType\":\"OneCancelsTheOther\"}" +
+                "{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"stopPx\":%.2f,\"orderQty\":%.8f,\"execInst\":\"LastPrice\",\"contingencyType\":\"OneTriggersTheOther\"}" +
+                ",{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"price\":%.2f,\"execInst\":\"Close\",\"contingencyType\":\"OneCancelsTheOther\"}" +
+                ",{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"side\":\"%s\",\"stopPx\":%.2f,\"execInst\":\"LastPrice,Close\",\"contingencyType\":\"OneCancelsTheOther\"}" +
                 "]}";
         String bodyOrder = String.format(
                 bodyOrderTemplate,
                 ordLinkId+"-"+Orders.PARENT,
                 ordLinkId,
                 triggerPrice,
-                simpleOrderQty,
+                orderQty,
                 ordLinkId+"-"+Orders.TAKE_PROFIT,
                 ordLinkId,
                 takeProfitPrice,

@@ -1,5 +1,6 @@
 package com.beuwa.redwine.strategy.sma.facade;
 
+import com.beuwa.redwine.core.events.business.QuoteEvent;
 import com.beuwa.redwine.strategy.sma.events.broker.*;
 import com.beuwa.redwine.strategy.sma.status.TrackingOrderStatus;
 import org.apache.logging.log4j.Logger;
@@ -49,27 +50,27 @@ public class TrackingFacade extends IntegrationFacade {
         }
     }
 
-    public void longOrder() {
+    public void longOrder(@Observes TrackLongEntryEvent trackLongEntryEvent) {
         calculateBouncingUp();
         direction = BUY;
         orderStatus.accepted();
     }
 
-    public void shorOrder() {
+    public void shorOrder(@Observes TrackShortEntryEvent trackShortEntryEvent) {
         calculateBouncingDown();
         direction = SELL;
         orderStatus.accepted();
     }
 
-    public void moveLongOrder() {
+    public void moveLongOrder(@Observes TrackMoveLongEntryEvent trackMoveLongEntryEvent) {
         calculateBouncingUp();
     }
 
-    public void moveShortOrder() {
+    public void moveShortOrder(@Observes TrackMoveShortEntryEvent trackMoveShortEntryEvent) {
         calculateBouncingDown();
     }
 
-    public void processQuoteEvent() {
+    public void processQuoteEvent(@Observes QuoteEvent event) {
         if(!propertiesFacade.isRedwineTrackingOn()) {
             return;
         }
