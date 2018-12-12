@@ -182,10 +182,10 @@ public class EventsFactory {
                 builder.side(side);
             }
 
-            if(valid(data, "simpleOrderQty")) {
-                JsonNumber simpleOrderQtyNumber = data.getJsonNumber("simpleOrderQty");
-                long simpleOrderQty = (long) (simpleOrderQtyNumber.doubleValue() * 100000000);
-                builder.simpleOrderQty(simpleOrderQty);
+            if(valid(data, "orderQty")) {
+                JsonNumber orderQtyNumber = data.getJsonNumber("orderQty");
+                long orderQty = (long) (orderQtyNumber.doubleValue() * 100000000);
+                builder.orderQty(orderQty);
             }
 
             if(valid(data, "price")) {

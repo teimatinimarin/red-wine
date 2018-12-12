@@ -8,7 +8,7 @@ import com.beuwa.redwine.strategy.sma.events.broker.NewMinTargetReachedEvent;
 import com.beuwa.redwine.strategy.sma.statistics.Statistics;
 import com.beuwa.redwine.strategy.sma.constants.Fibonacci;
 import com.beuwa.redwine.strategy.sma.utils.Round;
-import com.beuwa.redwine.strategy.sma.utils.SimpleOrderQuantityCalculator;
+import com.beuwa.redwine.strategy.sma.utils.OrderQuantityCalculator;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Event;
@@ -31,7 +31,7 @@ public abstract class IntegrationFacade {
     protected Statistics statistics;
 
     @Inject
-    protected SimpleOrderQuantityCalculator simpleOrderQuantityCalculator;
+    protected OrderQuantityCalculator orderQuantityCalculator;
 
     @Inject
     protected Round round;
@@ -49,7 +49,7 @@ public abstract class IntegrationFacade {
 
     protected long trigger;
     protected double triggerPrice;
-    protected double simpleOrderQty;
+    protected double orderQty;
     protected long takeProfit;
     protected double takeProfitPrice;
     protected long stopLoss;
@@ -72,13 +72,13 @@ public abstract class IntegrationFacade {
         init();
         trigger = ( ask + entryBounce );
         triggerPrice = round.toNear50Cents(trigger); // Trigger Price
-        simpleOrderQty = simpleOrderQuantityCalculator.bitcoinToInvest();
+        orderQty = orderQuantityCalculator.contractsToInvest();
         takeProfit = ask + takeProfitBounce;
         takeProfitPrice = round.toNear50Cents(takeProfit); // Take Profit Price
         stopLoss = ask - entryBounce;
         stopLossPrice = round.toNear50Cents( stopLoss); // Stop Loss Price
 
-        logger.debug("Bouncing Down calculation done: ask: {}, bid:{}, range: {}, entryBounce: {}, takeProfitBounce: {}, trigger: {}, triggerPrice:{}, simpleOtderQty: {}, takeProfit: {}, takeProfitPrice:{}, stopLoss: {}, stopLossPrice: {}",
+        logger.debug("Bouncing Up calculation done: ask: {}, bid:{}, range: {}, entryBounce: {}, takeProfitBounce: {}, trigger: {}, triggerPrice:{}, simpleOtderQty: {}, takeProfit: {}, takeProfitPrice:{}, stopLoss: {}, stopLossPrice: {}",
                 ask,
                 bid,
                 range,
@@ -86,7 +86,7 @@ public abstract class IntegrationFacade {
                 takeProfitBounce,
                 trigger,
                 triggerPrice,
-                simpleOrderQty,
+                orderQty,
                 takeProfit,
                 takeProfitPrice,
                 stopLoss,
@@ -98,7 +98,7 @@ public abstract class IntegrationFacade {
         init();
         trigger = ( bid - entryBounce );
         triggerPrice = round.toNear50Cents(trigger); // Trigger Price
-        simpleOrderQty = simpleOrderQuantityCalculator.bitcoinToInvest();
+        orderQty = orderQuantityCalculator.contractsToInvest();
         takeProfit = bid - takeProfitBounce;
         takeProfitPrice = round.toNear50Cents(takeProfit); // Take Profit Price
         stopLoss = bid + entryBounce;
@@ -112,7 +112,7 @@ public abstract class IntegrationFacade {
                 takeProfitBounce,
                 trigger,
                 triggerPrice,
-                simpleOrderQty,
+                orderQty,
                 takeProfit,
                 takeProfitPrice,
                 stopLoss,

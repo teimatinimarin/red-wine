@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 
-public class SimpleOrderQuantityCalculator {
+public class OrderQuantityCalculator {
     @Inject
     Logger logger;
 
@@ -16,7 +16,7 @@ public class SimpleOrderQuantityCalculator {
     @Inject
     private PropertiesFacade propertiesFacade;
 
-    public long satoshisToInvest() {
+    public int contractsToInvest() {
         var walletBalance = statistics.getWalletBalance();
         var realisedPNL = statistics.getRealisedPnl();
         var positionMargin = statistics.getPositionMargin();
@@ -25,25 +25,22 @@ public class SimpleOrderQuantityCalculator {
         var maxInvestment = propertiesFacade.getMaxInvest();
         var percentageToInvest = (propertiesFacade.getPercentageToInvest()/100f);
 
-        var satoshisToInvest = (long)(available * percentageToInvest);
+        var satoshisToInvest = Math.min((long)(available * percentageToInvest), maxInvestment);
+        var priceCurrent = statistics.getPriceCurrent();
+        var contracts = (int)((satoshisToInvest*priceCurrent)/100000000D);
 
         logger.info(
-                "WalletBalance: {}, PositionMargin: {}, Available: {}, MaxInvestment: {}, PercentageToInvest: {}, SatoshiToInvest: {}",
+                "WalletBalance: {}, PositionMargin: {}, Available: {}, MaxInvestment: {}, PercentageToInvest: {}, SatoshiToInvest: {}, Contracts: {}",
                 walletBalance,
                 positionMargin,
                 available,
                 maxInvestment,
                 percentageToInvest,
-                satoshisToInvest
+                satoshisToInvest,
+                contracts
         );
 
-        return Math.min(satoshisToInvest, maxInvestment);
-    }
-
-    public double bitcoinToInvest() {
-        var satoshiToInvest = satoshisToInvest();
-        var bitcoinToInvest = satoshiToInvest/100000000D;
-        return bitcoinToInvest;
+        return contracts;
     }
 }
 

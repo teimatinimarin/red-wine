@@ -137,7 +137,7 @@ public class Strategy {
         } else {
             statistics.setRealisedPnl(positionEvent.getRealisedPnl());
 
-            if(propertiesFacade.sendOpen()) {
+            if(propertiesFacade.sendOpen()) { // TODO sendOpen or closed?
                 snsDao.publish("Closed", "Closed");
                 logger.debug("SNS Message published. For Close.");
             }

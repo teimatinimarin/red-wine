@@ -58,7 +58,7 @@ public class TradingFacade extends IntegrationFacade {
         brokerDao.setLeverage();
         logger.debug("Leverage set");
 
-        brokerDao.createOrder(simpleOrderQty, triggerPrice, takeProfitPrice, stopLossPrice, SELL);
+        brokerDao.createOrder(orderQty, triggerPrice, takeProfitPrice, stopLossPrice, SELL);
         logger.debug("Orders created");
 
         if(propertiesFacade.sendOpen()) {
@@ -73,7 +73,7 @@ public class TradingFacade extends IntegrationFacade {
         brokerDao.setLeverage();
         logger.debug("Leverage set");
 
-        brokerDao.createOrder(simpleOrderQty, triggerPrice, takeProfitPrice, stopLossPrice, BUY);
+        brokerDao.createOrder(orderQty, triggerPrice, takeProfitPrice, stopLossPrice, BUY);
         logger.debug("Orders created");
 
         if(propertiesFacade.sendOpen()) {

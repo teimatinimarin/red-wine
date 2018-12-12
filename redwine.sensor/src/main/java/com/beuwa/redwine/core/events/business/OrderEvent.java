@@ -7,7 +7,7 @@ public class OrderEvent implements BusinessEvent {
     private String clientOrderId;
     private String clientOrderLinkId;
     private String side;
-    private long simpleOrderQty;
+    private long orderQty;
     private long price;
     private long stopPx;
     private String orderType;
@@ -18,7 +18,7 @@ public class OrderEvent implements BusinessEvent {
                       String clientOrderId,
                       String clientOrderLinkId,
                       String side,
-                      long simpleOrderQty,
+                      long orderQty,
                       long price,
                       long stopPx,
                       String orderType,
@@ -28,7 +28,7 @@ public class OrderEvent implements BusinessEvent {
         this.clientOrderId = clientOrderId;
         this.clientOrderLinkId = clientOrderLinkId;
         this.side = side;
-        this.simpleOrderQty = simpleOrderQty;
+        this.orderQty = orderQty;
         this.price = price;
         this.stopPx = stopPx;
         this.orderType = orderType;
@@ -52,8 +52,8 @@ public class OrderEvent implements BusinessEvent {
         return side;
     }
 
-    public long getSimpleOrderQty() {
-        return simpleOrderQty;
+    public long getOrderQty() {
+        return orderQty;
     }
 
     public long getPrice() {
@@ -81,7 +81,7 @@ public class OrderEvent implements BusinessEvent {
         private String clientOrderId;
         private String clientOrderLinkId;
         private String side;
-        private long simpleOrderQty;
+        private long orderQty;
         private long price;
         private long stopPx;
         private String orderType;
@@ -108,8 +108,8 @@ public class OrderEvent implements BusinessEvent {
             return this;
         }
 
-        public OrderEventBuilder simpleOrderQty(long simpleOrderQty) {
-            this.simpleOrderQty = simpleOrderQty;
+        public OrderEventBuilder orderQty(long orderQty) {
+            this.orderQty = orderQty;
             return this;
         }
 
@@ -144,7 +144,7 @@ public class OrderEvent implements BusinessEvent {
                     clientOrderId,
                     clientOrderLinkId,
                     side,
-                    simpleOrderQty,
+                    orderQty,
                     price,
                     stopPx,
                     orderType,
