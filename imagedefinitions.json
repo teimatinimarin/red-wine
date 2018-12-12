@@ -1,6 +1,6 @@
 [
   {
-    "name": "RedwineeContainerTest",
+    "name": "RedwineContainerTest",
     "imageUri": "432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine"
   }
 ]
