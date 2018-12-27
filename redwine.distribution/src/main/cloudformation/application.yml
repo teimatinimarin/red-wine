@@ -236,23 +236,10 @@ Resources:
           MountPoints:
             - SourceVolume: efs-redwine-1
               ContainerPath: /home/ec2-user/redwine/logs
-        - Name: RedwineContainerTest-2
-          Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
-          MemoryReservation: 128
-          User: ec2-user
-          Environment:
-            - Name: ENV
-              Value: test
-          MountPoints:
-            - SourceVolume: efs-redwine-2
-              ContainerPath: /home/ec2-user/redwine/logs
       Volumes:
         - Host:
             SourcePath: /efs/test/redwine-1
           Name: efs-redwine-1
-        - Host:
-            SourcePath: /efs/test/redwine-2
-          Name: efs-redwine-2
 
   RedwineTestService:
     Type: AWS::ECS::Service
