@@ -101,8 +101,8 @@ public class PropertiesFacade {
         return properties.getLeverage();
     }
 
-    public long getMaxInvest() {
-        return Long.parseLong(properties.getMaxInvest());
+    public int getMaxInvest() {
+        return Integer.parseInt(properties.getMaxInvest());
     }
 
     public long getPercentageToInvest() {

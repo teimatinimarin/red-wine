@@ -18,7 +18,7 @@ public class OrderFilterObserver {
 
     public void processOrderEvent(@Observes OrderEvent orderEvent) {
         if(orderEvent.getOrderStatus() != null) {
-            logger.info("Order: {} -> {}", orderEvent.getClientOrderId(), orderEvent.getOrderStatus());
+            logger.debug("Order: {} -> {}", orderEvent.getOrderId(), orderEvent.getOrderStatus());
             event.fire(new OrderChangedEvent(orderEvent));
         }
     }

@@ -1,61 +1,95 @@
 package com.beuwa.redwine.strategy.sma.status;
 
-import com.beuwa.redwine.core.events.business.OrderEvent;
-import com.beuwa.redwine.strategy.sma.constants.Orders;
+import com.beuwa.redwine.core.events.business.PositionEvent;
+import org.apache.logging.log4j.Logger;
+
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class TradingOrderStatus extends OrderStatus {
-    private OrderEvent parent;
-    private OrderEvent takeProfit;
-    private OrderEvent stopLoss;
+    @Inject
+    private Logger logger;
 
-    public void setOrder(OrderEvent orderEvent) {
-        String orderStatus = orderEvent.getOrderStatus();
-        if("New".compareTo(orderStatus) == 0) {
-            String clientOrderId = orderEvent.getClientOrderId();
-            if (clientOrderId.endsWith(Orders.PARENT.toString())) {
-                parent = orderEvent;
-            } else if (clientOrderId.endsWith(Orders.TAKE_PROFIT.toString())) {
-                takeProfit = orderEvent;
-            } else if (clientOrderId.endsWith(Orders.STOP_LOSS.toString())) {
-                stopLoss = orderEvent;
-            }
+    private String familyOrderId;
+    private Map<String, Order> entryOrders = new HashMap<>();
+    private Map<String, Order> closeOrders = new HashMap<>();
 
-            if(takeProfit != null && stopLoss != null) {
-                // This covers the case where redwine is started and PARENT order was Filled and TP/SL are New
-                accepted();
-            }
+    private PositionEvent positionEvent;
+
+    public void reset() {
+        super.reset();
+        this.familyOrderId = null;
+    }
+
+    public void setFamilyOrderId(String familyOrderId) {
+        this.familyOrderId = familyOrderId;
+    }
+
+    public String getFamilyOrderId() {
+        return familyOrderId;
+    }
+
+    public void setPosition(PositionEvent positionEvent) {
+        this.positionEvent = positionEvent;
+    }
+
+    public void removeOrder(String orderId) {
+        if(null != getEntryOrder(orderId)) {
+            removeEntryOrder(orderId);
         }
-        else if("Filled".compareTo(orderStatus) == 0) {
-            String clientOrderId = orderEvent.getClientOrderId();
-            if (clientOrderId.endsWith(Orders.PARENT.toString())) {
-                opened();
-            } else if (clientOrderId.endsWith(Orders.TAKE_PROFIT.toString())) {
-                reset();
-            } else if (clientOrderId.endsWith(Orders.STOP_LOSS.toString())) {
-                reset();
-            }
-        }
-        else if("Canceled".compareTo(orderStatus) == 0) {
-            // This handles manual cancelation of orders
-            String clientOrderId = orderEvent.getClientOrderId();
-            if (clientOrderId.endsWith(Orders.TAKE_PROFIT.toString())) {
-                takeProfit = null;
-            } else if (clientOrderId.endsWith(Orders.STOP_LOSS.toString())) {
-                stopLoss = null;
-            }
-            if(takeProfit == null && stopLoss == null) {
-                // TAKE_PROFIT and STOP_LOSS were manually cancelled
-                reset();
-            }
+        if(null != getCloseOrder(orderId)) {
+            removeCloseOrder(orderId);
         }
     }
 
-    @Override
-    protected void reset() {
-        status = EMPTY;
-        parent = null;
-        takeProfit = null;
-        stopLoss = null;
+    public Order getOrder(String orderId) {
+        Order order = getEntryOrder(orderId);
+        if(null == order) {
+            order = getCloseOrder(orderId);
+        }
+
+        return order;
+    }
+
+    public Order getOrderByClientOrderId(String clientOrderId) {
+        Map<String, Order> allOrders = new HashMap<>();
+        allOrders.putAll(entryOrders);
+        allOrders.putAll(closeOrders);
+
+        Optional<Map.Entry<String, Order>> optionalEntry = allOrders.entrySet().stream()
+                .filter(map -> null != map.getValue().getClientOrderId() && map.getValue().getClientOrderId().equals(clientOrderId))
+                .findFirst();
+        return optionalEntry.get().getValue();
+    }
+
+    public void addEntryOrder(Order order) {
+        entryOrders.put(order.getOrderId(), order);
+        logger.info("Order - There are {} Entry Orders", entryOrders.size());
+    }
+
+    private Order getEntryOrder(String orderId) {
+        return entryOrders.get(orderId);
+    }
+
+    private void removeEntryOrder(String orderId) {
+        entryOrders.remove(orderId);
+        logger.info("Order - There are {} Entry Orders", entryOrders.size());
+    }
+
+    public void addCloseOrder(Order order) {
+        closeOrders.put(order.getOrderId(), order);
+        logger.info("Order - There are {} Close Orders", closeOrders.size());
+    }
+
+    private Order getCloseOrder(String orderId) {
+        return closeOrders.get(orderId);
+    }
+
+    private void removeCloseOrder(String orderId) {
+        closeOrders.remove(orderId);
+        logger.info("Order - There are {} Close Orders", closeOrders.size());
     }
 
     @Override
@@ -63,15 +97,4 @@ public class TradingOrderStatus extends OrderStatus {
         super.sent();
     }
 
-    public OrderEvent getParent() {
-        return parent;
-    }
-
-    public OrderEvent getTakeProfit() {
-        return takeProfit;
-    }
-
-    public OrderEvent getStopLoss() {
-        return stopLoss;
-    }
 }

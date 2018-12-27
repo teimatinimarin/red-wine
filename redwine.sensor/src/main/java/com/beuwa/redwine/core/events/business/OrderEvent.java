@@ -4,35 +4,41 @@ import com.beuwa.redwine.core.events.BusinessEvent;
 
 public class OrderEvent implements BusinessEvent {
     private String message;
+    private String action;
+    private String orderId;
     private String clientOrderId;
-    private String clientOrderLinkId;
     private String side;
     private long orderQty;
     private long price;
     private long stopPx;
     private String orderType;
     private String orderStatus;
+    private String executionInstruction;
     private String triggered;
 
     public OrderEvent(String message,
+                      String action,
+                      String orderId,
                       String clientOrderId,
-                      String clientOrderLinkId,
                       String side,
                       long orderQty,
                       long price,
                       long stopPx,
                       String orderType,
                       String orderStatus,
+                      String executionInstruction,
                       String triggered) {
         this.message = message;
+        this.action = action;
+        this.orderId = orderId;
         this.clientOrderId = clientOrderId;
-        this.clientOrderLinkId = clientOrderLinkId;
         this.side = side;
         this.orderQty = orderQty;
         this.price = price;
         this.stopPx = stopPx;
         this.orderType = orderType;
         this.orderStatus = orderStatus;
+        this.executionInstruction = executionInstruction;
         this.triggered = triggered;
     }
 
@@ -40,12 +46,16 @@ public class OrderEvent implements BusinessEvent {
         return message;
     }
 
-    public String getClientOrderId() {
-        return clientOrderId;
+    public String getAction() {
+        return action;
     }
 
-    public String getClientOrderLinkId() {
-        return clientOrderLinkId;
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getClientOrderId() {
+        return clientOrderId;
     }
 
     public String getSide() {
@@ -72,20 +82,26 @@ public class OrderEvent implements BusinessEvent {
         return orderStatus;
     }
 
+    public String getExecutionInstruction() {
+        return executionInstruction;
+    }
+
     public String getTriggered() {
         return triggered;
     }
 
     public static class OrderEventBuilder {
         private String message;
+        private String action;
+        private String orderId;
         private String clientOrderId;
-        private String clientOrderLinkId;
         private String side;
         private long orderQty;
         private long price;
         private long stopPx;
         private String orderType;
         private String orderStatus;
+        private String executionInstruction;
         private String triggered;
 
         public OrderEventBuilder message(String message) {
@@ -93,13 +109,18 @@ public class OrderEvent implements BusinessEvent {
             return this;
         }
 
-        public OrderEventBuilder clientOrderId(String clientOrderId) {
-            this.clientOrderId = clientOrderId;
+        public OrderEventBuilder action(String action) {
+            this.action = action;
             return this;
         }
 
-        public OrderEventBuilder clientOrderLinkId(String clientOrderLinkId) {
-            this.clientOrderLinkId = clientOrderLinkId;
+        public OrderEventBuilder orderId(String orderId) {
+            this.orderId = orderId;
+            return this;
+        }
+
+        public OrderEventBuilder clientOrderId(String clientOrderId) {
+            this.clientOrderId = clientOrderId;
             return this;
         }
 
@@ -133,6 +154,11 @@ public class OrderEvent implements BusinessEvent {
             return this;
         }
 
+        public OrderEventBuilder executionInstruction(String executionInstruction) {
+            this.executionInstruction = executionInstruction;
+            return this;
+        }
+
         public OrderEventBuilder triggered(String triggered) {
             this.triggered = triggered;
             return this;
@@ -141,14 +167,16 @@ public class OrderEvent implements BusinessEvent {
         public OrderEvent build() {
             return new OrderEvent(
                     message,
+                    action,
+                    orderId,
                     clientOrderId,
-                    clientOrderLinkId,
                     side,
                     orderQty,
                     price,
                     stopPx,
                     orderType,
                     orderStatus,
+                    executionInstruction,
                     triggered
             );
         }

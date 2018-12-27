@@ -16,6 +16,9 @@ public class OrderQuantityCalculator {
     @Inject
     private PropertiesFacade propertiesFacade;
 
+    @Inject
+    protected Round round;
+
     public int contractsToInvest() {
         var walletBalance = statistics.getWalletBalance();
         var realisedPNL = statistics.getRealisedPnl();
@@ -25,9 +28,9 @@ public class OrderQuantityCalculator {
         var maxInvestment = propertiesFacade.getMaxInvest();
         var percentageToInvest = (propertiesFacade.getPercentageToInvest()/100f);
 
-        var satoshisToInvest = Math.min((long)(available * percentageToInvest), maxInvestment);
-        var priceCurrent = statistics.getPriceCurrent();
-        var contracts = (int)((satoshisToInvest*priceCurrent)/100000000D);
+        var satoshisToInvest = (long)(available * percentageToInvest);
+        var bidPrice = round.toNear50Cents(statistics.getBid()); // TODO When to use bid or ask?
+        var contracts = Math.min((int)((satoshisToInvest*bidPrice)/100000000D), maxInvestment);
 
         logger.info(
                 "WalletBalance: {}, PositionMargin: {}, Available: {}, MaxInvestment: {}, PercentageToInvest: {}, SatoshiToInvest: {}, Contracts: {}",

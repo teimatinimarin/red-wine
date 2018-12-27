@@ -11,6 +11,9 @@ public class OrderObserver {
     Logger logger;
 
     public void observe(@Observes OrderEvent event) {
-        logger.debug( "Order: {}", event.getMessage());
+        logger.debug(
+                "OrderEvent: {}",
+                event.getMessage()
+        );
     }
 }

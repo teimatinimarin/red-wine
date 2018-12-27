@@ -15,8 +15,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 public abstract class IntegrationFacade {
-    protected static final String SELL = "Sell";
-    protected static final String BUY = "Buy";
+    public static final String SELL = "Sell";
+    public static final String BUY = "Buy";
 
     @Inject
     private Logger logger;
@@ -39,6 +39,7 @@ public abstract class IntegrationFacade {
     @Inject
     protected Event<BrokerEvent> brokerEvent;
 
+    protected String side;
     protected long ask;
     protected double askPrice;
     protected long bid;
@@ -49,7 +50,7 @@ public abstract class IntegrationFacade {
 
     protected long trigger;
     protected double triggerPrice;
-    protected double orderQty;
+    protected int orderQty;
     protected long takeProfit;
     protected double takeProfitPrice;
     protected long stopLoss;
@@ -70,6 +71,7 @@ public abstract class IntegrationFacade {
 
     protected void calculateBouncingUp() {
         init();
+        side = BUY;
         trigger = ( ask + entryBounce );
         triggerPrice = round.toNear50Cents(trigger); // Trigger Price
         orderQty = orderQuantityCalculator.contractsToInvest();
@@ -96,6 +98,7 @@ public abstract class IntegrationFacade {
 
     protected void calculateBouncingDown() {
         init();
+        side = SELL;
         trigger = ( bid - entryBounce );
         triggerPrice = round.toNear50Cents(trigger); // Trigger Price
         orderQty = orderQuantityCalculator.contractsToInvest();

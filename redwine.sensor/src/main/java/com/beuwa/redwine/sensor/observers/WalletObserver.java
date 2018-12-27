@@ -11,6 +11,9 @@ public class WalletObserver {
     Logger logger;
 
     public void observe(@Observes WalletEvent event) {
-        logger.debug("Wallet amount: {}", event.getAmount());
+        logger.debug(
+                "WalletEvent: {}",
+                event.getAmount()
+        );
     }
 }

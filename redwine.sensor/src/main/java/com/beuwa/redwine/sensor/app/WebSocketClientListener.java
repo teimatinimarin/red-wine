@@ -69,7 +69,7 @@ public class WebSocketClientListener implements WebSocket.Listener {
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
         webSocket.request(1);
-        logger.info("Last: {}, Message: {}", last, data);
+        logger.debug("Last: {}, Message: {}", last, data);
         if(!last) {
             multiPart = true;
             parts.append(data.toString());
@@ -107,6 +107,7 @@ public class WebSocketClientListener implements WebSocket.Listener {
         logger.error("onError Cause: {}", error.getCause());
         logger.error("onError input Closed?: {}", webSocket.isInputClosed());
         logger.error("onError output Closed?: {}", webSocket.isOutputClosed());
+        error.printStackTrace();
         webSocket.abort();
         latch.countDown();
     }

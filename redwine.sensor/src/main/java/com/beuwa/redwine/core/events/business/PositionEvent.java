@@ -121,13 +121,15 @@ import com.beuwa.redwine.core.events.BusinessEvent;
 
 public class PositionEvent implements BusinessEvent {
     private String message;
+    private String action;
     private boolean positionOpened;
     private long positionMargin;
     private long positionContracts;
     private long realisedPnl;
 
-    private PositionEvent(String message, boolean positionOpened, long positionMargin, long positionContracts, long realisedPnl) {
+    private PositionEvent(String message, String action, boolean positionOpened, long positionMargin, long positionContracts, long realisedPnl) {
         this.message = message;
+        this.action = action;
         this.positionOpened = positionOpened;
         this.positionMargin = positionMargin;
         this.positionContracts = positionContracts;
@@ -136,6 +138,10 @@ public class PositionEvent implements BusinessEvent {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getAction() {
+        return action;
     }
 
     public boolean isPositionOpened() {
@@ -156,6 +162,7 @@ public class PositionEvent implements BusinessEvent {
 
     public static class PositionEventBuilder {
         private String message;
+        private String action;
         private boolean positionOpened;
         private long positionMargin;
         private long positionContracts;
@@ -163,6 +170,11 @@ public class PositionEvent implements BusinessEvent {
 
         public PositionEventBuilder message(String message) {
             this.message = message;
+            return this;
+        }
+
+        public PositionEventBuilder action(String action) {
+            this.action = action;
             return this;
         }
 
@@ -187,7 +199,14 @@ public class PositionEvent implements BusinessEvent {
         }
 
         public PositionEvent build() {
-            return new PositionEvent(message, positionOpened, positionMargin, positionContracts, realisedPnl);
+            return new PositionEvent(
+                    message,
+                    action,
+                    positionOpened,
+                    positionMargin,
+                    positionContracts,
+                    realisedPnl
+            );
         }
     }
 }

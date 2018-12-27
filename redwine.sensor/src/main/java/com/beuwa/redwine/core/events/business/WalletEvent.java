@@ -75,10 +75,16 @@ import com.beuwa.redwine.core.events.BusinessEvent;
  */
 
 public class WalletEvent implements BusinessEvent {
+    private String message;
     private long amount;
 
-    private WalletEvent(long amount) {
+    private WalletEvent(String message, long amount) {
+        this.message = message;
         this.amount = amount;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public long getAmount() {
@@ -86,15 +92,23 @@ public class WalletEvent implements BusinessEvent {
     }
 
     public static class WalletEventBuilder {
+        private String message;
         private long amount;
 
+        public WalletEventBuilder message(String message) {
+            this.message = message;
+            return this;
+        }
         public WalletEventBuilder amount(long amount) {
             this.amount = amount;
             return this;
         }
 
         public WalletEvent build() {
-            return new WalletEvent(amount);
+            return new WalletEvent(
+                    message,
+                    amount
+            );
         }
     }
 }

@@ -3,13 +3,14 @@ package com.beuwa.redwine.strategy.sma.dao;
 import com.beuwa.redwine.core.config.PropertiesFacade;
 import com.beuwa.redwine.sensor.utils.HttpMethod;
 import com.beuwa.redwine.sensor.utils.RestClient;
-import com.beuwa.redwine.strategy.sma.constants.Orders;
+import com.beuwa.redwine.strategy.sma.facade.IntegrationFacade;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 
 import java.net.http.HttpResponse;
-import java.util.UUID;
+
+import static com.beuwa.redwine.strategy.sma.constants.Orders.*;
 
 public class BrokerDao {
     @Inject
@@ -31,27 +32,17 @@ public class BrokerDao {
         logger.debug(responseLeverage.body());
     }
 
-    public void createOrder(double orderQty, double triggerPrice, double takeProfitPrice, double stopLossPrice, String stopLossSide) {
-        var ordLinkId = UUID.randomUUID().toString().substring(24, 36);
+    public void createEntryOrder(String familyOrderId, int orderQty, double triggerPrice, String side) {
         String pathOrder = "/api/v1/order/bulk";
         String bodyOrderTemplate = "{\"orders\":[" +
-                "{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"stopPx\":%.2f,\"orderQty\":%.8f,\"execInst\":\"LastPrice\",\"contingencyType\":\"OneTriggersTheOther\"}" +
-                ",{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"price\":%.2f,\"execInst\":\"Close\",\"contingencyType\":\"OneCancelsTheOther\"}" +
-                ",{\"clOrdID\":\"%s\",\"clOrdLinkID\":\"%s\",\"symbol\":\"XBTUSD\",\"side\":\"%s\",\"stopPx\":%.2f,\"execInst\":\"LastPrice,Close\",\"contingencyType\":\"OneCancelsTheOther\"}" +
-                "]}";
+                "{\"clOrdID\":\"%s\",\"symbol\":\"XBTUSD\",\"side\":\"%s\",\"stopPx\":%.2f,\"orderQty\":%d,\"execInst\":\"LastPrice\"}" +
+               "]}";
         String bodyOrder = String.format(
                 bodyOrderTemplate,
-                ordLinkId+"-"+Orders.PARENT,
-                ordLinkId,
+                familyOrderId + "-" + ENTRY,
+                side,
                 triggerPrice,
-                orderQty,
-                ordLinkId+"-"+Orders.TAKE_PROFIT,
-                ordLinkId,
-                takeProfitPrice,
-                ordLinkId+"-"+ Orders.STOP_LOSS,
-                ordLinkId,
-                stopLossSide,
-                stopLossPrice
+                orderQty
                 );
 
         logger.debug(bodyOrder);
@@ -60,25 +51,48 @@ public class BrokerDao {
         logger.debug(responseOrder.body());
     }
 
-    public void moveOrder(String clientOrderId, double triggerPrice, double takeProfitPrice, double stopLossPrice) {
+    public void moveEntryOrder(String orderId, double triggerPrice) {
         String pathOrder = "/api/v1/order/bulk";
         String bodyOrderTemplate = "{\"orders\":[" +
-                "{\"origClOrdID\":\"%s\",\"stopPx\":%.2f}," +
-                "{\"origClOrdID\":\"%s\",\"price\":%.2f}," +
-                "{\"origClOrdID\":\"%s\",\"stopPx\":%.2f}" +
+                "{\"orderID\":\"%s\",\"stopPx\":%.2f}" +
                 "]}";
         String bodyOrder = String.format(
                 bodyOrderTemplate,
-                clientOrderId+"-"+Orders.PARENT,
-                triggerPrice,
-                clientOrderId+"-"+Orders.TAKE_PROFIT,
-                takeProfitPrice,
-                clientOrderId+"-"+Orders.STOP_LOSS,
-                stopLossPrice
+                orderId,
+                triggerPrice
         );
 
         logger.debug(bodyOrder);
         HttpResponse<String> responseOrder = restClient.doRequest(HttpMethod.PUT, pathOrder, bodyOrder, "application/json");
+        logger.debug("Response Code: {}", responseOrder.statusCode());
+        logger.debug(responseOrder.body());
+    }
+
+    public void createExitOrders(String familyOrderId, double takeProfitPrice, double stopLossPrice, String entrySide) {
+        String closeSide = entrySide.compareTo(IntegrationFacade.BUY)==0?IntegrationFacade.SELL:IntegrationFacade.BUY;
+        String pathOrder = "/api/v1/order/bulk";
+        String bodyOrderTemplate = "{\"orders\":[" +
+                "{\"clOrdID\":\"%s\",\"symbol\":\"XBTUSD\",\"price\":%.2f,\"execInst\":\"Close\"}" + // TakeProfit
+                ",{\"clOrdID\":\"%s\",\"symbol\":\"XBTUSD\",\"side\":\"%s\",\"stopPx\":%.2f,\"execInst\":\"LastPrice,Close\"}" + // StopLoss
+                "]}";
+        String bodyOrder = String.format(
+                bodyOrderTemplate,
+                familyOrderId + "-" + TAKE_PROFIT,
+                takeProfitPrice,
+                familyOrderId + "-" + STOP_LOSS,
+                closeSide,
+                stopLossPrice
+        );
+
+        logger.debug(bodyOrder);
+        HttpResponse<String> responseOrder = restClient.doRequest(HttpMethod.POST, pathOrder, bodyOrder, "application/json");
+        logger.debug("Response Code: {}", responseOrder.statusCode());
+        logger.debug(responseOrder.body());
+    }
+
+    public void cancelAllOrders() {
+        String pathOrder = "/api/v1/order/all";
+        HttpResponse<String> responseOrder = restClient.doRequest(HttpMethod.DELETE, pathOrder, "", "application/x-www-form-urlencode");
         logger.debug("Response Code: {}", responseOrder.statusCode());
         logger.debug(responseOrder.body());
     }

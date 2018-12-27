@@ -87,7 +87,8 @@ public class TrackingFacade extends IntegrationFacade {
                         triggerPrice
                 );
                 if(bidPrice>=triggerPrice) {
-                    orderStatus.opened();
+                    orderStatus.filled();
+                    // TODO send sns
                 }
             } else if(direction.compareTo(SELL) == 0) {
                 logger.info(
@@ -96,11 +97,16 @@ public class TrackingFacade extends IntegrationFacade {
                         triggerPrice
                 );
                 if(askPrice<=triggerPrice) {
-                    orderStatus.opened();
+                    orderStatus.
+
+
+
+                            filled();
+                    // TODO send sns
                 }
             }
         }
-        else if(orderStatus.isOpened()) {
+        else if(orderStatus.isFilled()) {
             if(direction.compareTo(BUY) == 0) {
                 logger.info(
                         "Tracking Buy. bidPrice {} >= takeProfit {}. bidPrice {} < stopLoss {}",
@@ -112,9 +118,11 @@ public class TrackingFacade extends IntegrationFacade {
                 if(bidPrice>=takeProfitPrice) {
                     logger.info("CLOSED OK!");
                     orderStatus.reset();
+                    // TODO send sns
                 } else if(bidPrice<=stopLossPrice) {
                     logger.info("CLOSED BAD!");
                     orderStatus.reset();
+                    // TODO send sns
                 }
 
             } else if(direction.compareTo(SELL) == 0) {
@@ -128,9 +136,11 @@ public class TrackingFacade extends IntegrationFacade {
                 if(askPrice<=takeProfitPrice) {
                     logger.info("CLOSED");
                     orderStatus.reset();
+                    // TODO send sns
                 } else if(askPrice>=stopLossPrice) {
                     logger.info("CLOSED BAD!");
                     orderStatus.reset();
+                    // TODO send sns
                 }
             }
         }
