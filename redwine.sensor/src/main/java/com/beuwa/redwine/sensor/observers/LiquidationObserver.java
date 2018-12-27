@@ -11,6 +11,9 @@ public class LiquidationObserver {
     Logger logger;
 
     public void observe(@Observes LiquidationEvent event) {
-        logger.debug( "Liquidation: {}", event.getMessage());
+        logger.debug(
+                "LiquidationEvent: {}",
+                event.getMessage()
+        );
     }
 }

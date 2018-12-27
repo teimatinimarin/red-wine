@@ -9,8 +9,6 @@ import com.beuwa.redwine.strategy.sma.constants.Status;
 import com.beuwa.redwine.strategy.sma.events.*;
 import com.beuwa.redwine.strategy.sma.events.broker.NewMaxTargetReachedEvent;
 import com.beuwa.redwine.strategy.sma.events.broker.NewMinTargetReachedEvent;
-import com.beuwa.redwine.strategy.sma.events.filtered.AskPriceFilteredEvent;
-import com.beuwa.redwine.strategy.sma.events.filtered.BidPriceFilteredEvent;
 import com.beuwa.redwine.strategy.sma.events.filtered.MarketPriceFilteredEvent;
 import com.beuwa.redwine.strategy.sma.events.statistics.NewMaxEvent;
 import com.beuwa.redwine.strategy.sma.events.statistics.NewMinEvent;
@@ -39,22 +37,6 @@ public class Strategy {
 
     @Inject
     private Event<BrokerEvent> brokerEvent;
-
-    public void processBidPricePublishedEvent(@Observes BidPriceFilteredEvent bidPricePublishedEvent) {
-        logger.debug(
-                "BidPrice Published: {}",
-                bidPricePublishedEvent.getPrice()
-        );
-        statistics.setBid(bidPricePublishedEvent.getPrice());
-    }
-
-    public void processAskPricePublishedEvent(@Observes AskPriceFilteredEvent askPricePublishedEvent) {
-        logger.debug(
-                "AskPrice Published: {}",
-                askPricePublishedEvent.getPrice()
-        );
-        statistics.setAsk(askPricePublishedEvent.getPrice());
-    }
 
     public void processMarkPricePublishedEvent(@Observes MarketPriceFilteredEvent marketPricePublishedEvent) {
         logger.debug(
@@ -124,30 +106,12 @@ public class Strategy {
     }
 
     public void processWalletEvent(@Observes WalletEvent walletEvent) {
-        logger.info("Wallet amount: {}", walletEvent.getAmount());
+        logger.info("Wallet - Amount: {}", walletEvent.getAmount());
         statistics.setWalletBalance(walletEvent.getAmount());
         statistics.setRealisedPnl(0);
     }
 
-    public void processPositionEvent(@Observes PositionEvent positionEvent) {
-        statistics.setPositionOpened(positionEvent.isPositionOpened());
-        if(positionEvent.isPositionOpened()) {
-            statistics.setPositionMargin(positionEvent.getPositionMargin());
-            statistics.setPositionContracts(positionEvent.getPositionContracts());
-        } else {
-            statistics.setRealisedPnl(positionEvent.getRealisedPnl());
 
-            if(propertiesFacade.sendOpen()) { // TODO sendOpen or closed?
-                snsDao.publish("Closed", "Closed");
-                logger.debug("SNS Message published. For Close.");
-            }
-        }
-
-        logger.info("Is Position Opened: {}", statistics.isPositionOpened());
-        logger.info("Position Margin: {}", statistics.getPositionMargin());
-        logger.info("Position Contracts: {}", statistics.getPositionContracts());
-        logger.info("Realised PNL: {}", statistics.getRealisedPnl());
-    }
 
     public void processQuoteEvent(@Observes QuoteEvent event) {
         statistics.setBid(event.getBidPrice());

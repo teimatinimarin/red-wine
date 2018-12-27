@@ -24,7 +24,6 @@ public class Statistics {
     private long targetRange = 0L;
 
     private long walletBalance;
-    private boolean positionOpened;
     private long positionMargin;
     private long positionContracts;
     private long realisedPnl;
@@ -130,14 +129,6 @@ public class Statistics {
 
     public long getWalletBalance() {
         return this.walletBalance;
-    }
-
-    public boolean isPositionOpened() {
-        return positionOpened;
-    }
-
-    public void setPositionOpened(boolean positionOpened) {
-        this.positionOpened = positionOpened;
     }
 
     public long getPositionMargin() {

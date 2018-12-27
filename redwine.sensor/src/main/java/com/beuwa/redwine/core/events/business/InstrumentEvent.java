@@ -236,6 +236,8 @@ import com.beuwa.redwine.core.events.BusinessEvent;
 public class InstrumentEvent implements BusinessEvent {
     // https://www.bitmex.com/app/contract/XBTUSD
 
+    private String message;
+
     private long epoch;
 
     // Total number of contracts in existence
@@ -256,7 +258,8 @@ public class InstrumentEvent implements BusinessEvent {
     // This is the price used for PNL
     private long markPrice;
 
-    private InstrumentEvent(long epoch, long openInterest, long turnover24H, long value24H, long bidPrice, long askPrice, long markPrice) {
+    private InstrumentEvent(String message, long epoch, long openInterest, long turnover24H, long value24H, long bidPrice, long askPrice, long markPrice) {
+        this.message = message;
         this.epoch = epoch;
         this.openInterest = openInterest;
         this.turnover24H = turnover24H;
@@ -264,6 +267,10 @@ public class InstrumentEvent implements BusinessEvent {
         this.bidPrice = bidPrice;
         this.askPrice = askPrice;
         this.markPrice = markPrice;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public long getEpoch() {
@@ -295,6 +302,7 @@ public class InstrumentEvent implements BusinessEvent {
     }
 
     public static class InstrumentEventBuilder {
+        private String message;
         private long epoch;
         private long openInterest;
         private long turnover24H;
@@ -302,6 +310,11 @@ public class InstrumentEvent implements BusinessEvent {
         private long bidPrice;
         private long askPrice;
         private long markPrice;
+
+        public InstrumentEventBuilder message(String message) {
+            this.message = message;
+            return this;
+        }
 
         public InstrumentEventBuilder epoch(long epoch) {
             this.epoch = epoch;
@@ -340,6 +353,7 @@ public class InstrumentEvent implements BusinessEvent {
 
         public InstrumentEvent build() {
             return new InstrumentEvent(
+                    message,
                     epoch,
                     openInterest,
                     turnover24H,

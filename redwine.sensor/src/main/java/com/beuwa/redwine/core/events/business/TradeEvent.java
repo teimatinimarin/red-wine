@@ -48,6 +48,8 @@ import com.beuwa.redwine.core.events.BusinessEvent;
  */
 
 public class TradeEvent implements BusinessEvent {
+    private String message;
+
     // buy or sell?
     private String side;
 
@@ -60,11 +62,16 @@ public class TradeEvent implements BusinessEvent {
     // Contracts bought
     private long foreignNotional;
 
-    private TradeEvent(String side, long price, long grossValue, long foreignNotional) {
+    private TradeEvent(String message, String side, long price, long grossValue, long foreignNotional) {
+        this.message = message;
         this.side = side;
         this.price = price;
         this.grossValue = grossValue;
         this.foreignNotional = foreignNotional;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public String getSide() {
@@ -84,10 +91,16 @@ public class TradeEvent implements BusinessEvent {
     }
 
     public static class TradeEventBuilder {
+        private String message;
         private String side;
         private long price;
         private long grossValue;
         private long foreignNotional;
+
+        public TradeEventBuilder message(String message) {
+            this.message = message;
+            return this;
+        }
 
         public TradeEventBuilder side(String side) {
             this.side = side;
@@ -111,6 +124,7 @@ public class TradeEvent implements BusinessEvent {
 
         public TradeEvent build() {
             return new TradeEvent(
+                    message,
                     side,
                     price,
                     grossValue,

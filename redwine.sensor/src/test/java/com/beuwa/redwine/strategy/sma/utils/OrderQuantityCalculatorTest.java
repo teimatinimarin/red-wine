@@ -31,7 +31,7 @@ class OrderQuantityCalculatorTest {
         when(statistics.getWalletBalance()).thenReturn(1000010L);
         when(statistics.getRealisedPnl()).thenReturn(10L);
         when(statistics.getPositionMargin()).thenReturn(10L);
-        when(propertiesFacade.getMaxInvest()).thenReturn(5000000L);
+        when(propertiesFacade.getMaxInvest()).thenReturn(50);
         when(propertiesFacade.getPercentageToInvest()).thenReturn(90L);
 
         //assertEquals(900009L, orderQuantityCalculator.satoshisToInvest());
@@ -39,7 +39,7 @@ class OrderQuantityCalculatorTest {
 
     @Test
     void satoshisToInvestMaxToInvest() {
-        var maxToInvest = 500L;
+        var maxToInvest = 50;
         when(statistics.getWalletBalance()).thenReturn(1000010L);
         when(statistics.getRealisedPnl()).thenReturn(10L);
         when(statistics.getPositionMargin()).thenReturn(10L);

@@ -12,11 +12,8 @@ public class TradeObserver {
 
     public void observe(@Observes TradeEvent event) {
         logger.debug(
-                "Trade: {} at {}, GrossValue: {}, ForeignNotional: {}",
-                event.getSide(),
-                event.getPrice(),
-                event.getGrossValue(),
-                event.getForeignNotional()
+                "TradeEvent: {}",
+                event.getMessage()
         );
     }
 }

@@ -7,8 +7,8 @@ public class TrackingOrderStatus extends OrderStatus {
     }
 
     @Override
-    public void opened() {
-        super.opened();
+    public void filled() {
+        super.filled();
     }
 
     @Override

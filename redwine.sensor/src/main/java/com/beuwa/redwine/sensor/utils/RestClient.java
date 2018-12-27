@@ -60,6 +60,9 @@ public class RestClient {
             case HttpMethod.PUT:
                 requestBuilder = requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(body));
                 break;
+            case HttpMethod.DELETE:
+                requestBuilder = requestBuilder.DELETE();
+                break;
             default:
                 break;
         }

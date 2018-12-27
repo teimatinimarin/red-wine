@@ -12,10 +12,8 @@ public class PositionObserver {
 
     public void observe(@Observes PositionEvent event) {
         logger.debug(
-                "Position: IsOpened: {}, PositionMargin: {}, PositionContracts: {}",
-                event.isPositionOpened(),
-                event.getPositionMargin(),
-                event.getPositionContracts()
+                "PositionEvent: {}",
+                event.getMessage()
         );
     }
 }

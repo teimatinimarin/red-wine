@@ -12,11 +12,8 @@ public class QuoteObserver {
 
     public void observe(@Observes QuoteEvent event) {
         logger.debug(
-                "Ask: {}|{}, Bid:{}|{}",
-                event.getAskPrice(),
-                event.getAskSize(),
-                event.getBidPrice(),
-                event.getBidSize()
+                "QuoteEvent: {}",
+                event.getMessage()
         );
     }
 }

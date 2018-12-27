@@ -12,13 +12,8 @@ public class InstrumentObserver {
 
     public void observe(@Observes InstrumentEvent event) {
         logger.debug(
-                "Instrument XBTUSD: Opened: {}, TurnOver24Hrs: {}, Value24Hrs: {}, BidPrice: {}, AskPrice:{}, MarketPrice: {}",
-                event.getOpenInterest(),
-                event.getTurnover24H(),
-                event.getValue24H(),
-                event.getBidPrice(),
-                event.getAskPrice(),
-                event.getMarkPrice()
+                "InstrumentEvent: {}",
+                event.getMessage()
         );
     }
 }

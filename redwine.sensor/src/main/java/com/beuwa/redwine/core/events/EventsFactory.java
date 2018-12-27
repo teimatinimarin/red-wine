@@ -58,6 +58,7 @@ public class EventsFactory {
         long amount = data.getJsonNumber("amount").longValue();
 
         WalletEvent walletEvent = new WalletEvent.WalletEventBuilder()
+                .message(document.toString())
                 .amount(amount)
                 .build();
 
@@ -77,6 +78,7 @@ public class EventsFactory {
         long askPrice = askPriceNumber.bigDecimalValue().multiply(ONE_HUNDRED).longValue();
 
         QuoteEvent quoteEvent = new QuoteEvent.QuoteEventBuilder()
+                .message(document.toString())
                 .bidSize( bidSize )
                 .bidPrice( bidPrice )
                 .askSize( askSize )
@@ -97,6 +99,7 @@ public class EventsFactory {
         long foreignNotional = data.getJsonNumber("foreignNotional").longValue();
 
         TradeEvent tradeEvent = new TradeEvent.TradeEventBuilder()
+                .message(document.toString())
                 .side( side )
                 .price( price )
                 .grossValue( grossValue )
@@ -111,6 +114,8 @@ public class EventsFactory {
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
 
         InstrumentEvent.InstrumentEventBuilder builder = new InstrumentEvent.InstrumentEventBuilder();
+
+        builder.message(document.toString());
 
         String timestamp = data.getString("timestamp");
         builder.epoch(Instant.parse(timestamp).toEpochMilli());
@@ -169,13 +174,16 @@ public class EventsFactory {
             JsonObject data = jsonArray.getJsonObject(i);
             OrderEvent.OrderEventBuilder builder = new OrderEvent.OrderEventBuilder();
 
+            builder.message(document.toString());
+
+            String action = document.getString("action");
+            builder.action(action);
+
+            String orderId = data.getString("orderID");
+            builder.orderId(orderId);
+
             String clientOrderId = data.getString("clOrdID");
             builder.clientOrderId(clientOrderId);
-
-            if(valid(data, "clOrdLinkID")) {
-                String clientOrderLinkId = data.getString("clOrdLinkID");
-                builder.clientOrderLinkId(clientOrderLinkId);
-            }
 
             if(valid(data, "side")) {
                 String side = data.getString("side");
@@ -210,6 +218,11 @@ public class EventsFactory {
                 builder.orderStatus(orderStatus);
             }
 
+            if(valid(data, "execInst")) {
+                String executionInstruction = data.getString("execInst");
+                builder.executionInstruction(executionInstruction);
+            }
+
             if(valid(data, "triggered")) {
                 String triggered = data.getString("triggered");
                 builder.triggered(triggered);
@@ -228,8 +241,12 @@ public class EventsFactory {
         JsonObject data = jsonArray.getJsonObject(0);
 
         PositionEvent.PositionEventBuilder builder = new PositionEvent.PositionEventBuilder();
+        builder.message(document.toString());
         if(data.containsKey("isOpen")) {
             builder.message(document.toString());
+
+            String action = document.getString("action");
+            builder.action(action);
 
             builder.positionOpened(data.getBoolean("isOpen"));
 

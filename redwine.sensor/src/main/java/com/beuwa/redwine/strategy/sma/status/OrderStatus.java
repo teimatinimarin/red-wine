@@ -1,27 +1,44 @@
 package com.beuwa.redwine.strategy.sma.status;
 
+import org.apache.logging.log4j.Logger;
+
+import javax.inject.Inject;
+
 public abstract class OrderStatus {
+    @Inject
+    private Logger logger;
+
+    // No System Order has been Sent
     protected static final int EMPTY = 0;
+    // System Order was Sent, not created yet
     protected static final int SENT = 1;
+    // System Order was Created
     protected static final int ACCEPTED = 2;
-    protected static final int OPENED = 3;
+    // Position was opened
+    protected static final int FILLED = 3;
+
+    protected boolean positionOpened = false;
 
     protected int status = EMPTY;
 
     protected void reset() {
         status = EMPTY;
+        logger.debug("OrderStatus - Status set to EMPTY");
     }
 
-    protected void sent() {
+    public void sent() {
         status = SENT;
+        logger.debug("OrderStatus - Status set to SENT");
     }
 
-    protected void accepted() {
+    public void accepted() {
         status = ACCEPTED;
+        logger.debug("OrderStatus - Status set to ACCEPTED");
     }
 
-    protected void opened() {
-        status = OPENED;
+    public void filled() {
+        status = FILLED;
+        logger.debug("OrderStatus - Status set to FILLED");
     }
 
     public int getStatus() {
@@ -40,7 +57,15 @@ public abstract class OrderStatus {
         return ACCEPTED == status;
     }
 
-    public boolean isOpened() {
-        return OPENED == status;
+    public boolean isFilled() {
+        return FILLED == status;
+    }
+
+    public void setPositionOpened(boolean positionOpened) {
+        this.positionOpened = positionOpened;
+    }
+
+    public boolean isPositionOpened() {
+        return positionOpened;
     }
 }

@@ -21,8 +21,6 @@ module redwine.sensor {
     requires sns;
     requires regions;
 
-    exports com.beuwa.redwine.strategy.sma.status to openwebbeans.impl;
-
     // Temporal for junit in intellij
     opens com.beuwa.redwine.sensor;
     opens com.beuwa.redwine.sensor.app;
@@ -36,6 +34,7 @@ module redwine.sensor {
     opens com.beuwa.redwine.strategy.sma.dao;
     opens com.beuwa.redwine.strategy.sma.utils;
     opens com.beuwa.redwine.strategy.sma.facade;
+    opens com.beuwa.redwine.strategy.sma.status;
     opens com.beuwa.redwine.strategy.sma.strategy;
 
     opens com.beuwa.redwine.core.config.beans;

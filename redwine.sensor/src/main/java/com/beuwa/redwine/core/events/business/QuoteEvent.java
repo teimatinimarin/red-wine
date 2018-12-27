@@ -39,16 +39,22 @@ import com.beuwa.redwine.core.events.BusinessEvent;
  */
 
 public class QuoteEvent implements BusinessEvent {
+    private String message;
     private long bidSize;
     private long bidPrice;
     private long askSize;
     private long askPrice;
 
-    private QuoteEvent(long bidSize, long bidPrice, long askSize, long askPrice) {
+    private QuoteEvent(String message, long bidSize, long bidPrice, long askSize, long askPrice) {
+        this.message = message;
         this.bidSize = bidSize;
         this.bidPrice = bidPrice;
         this.askSize = askSize;
         this.askPrice = askPrice;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public long getBidSize() {
@@ -68,10 +74,16 @@ public class QuoteEvent implements BusinessEvent {
     }
 
     public static class QuoteEventBuilder {
+        private String message;
         private long bidSize;
         private long bidPrice;
         private long askSize;
         private long askPrice;
+
+        public QuoteEventBuilder message(String message) {
+            this.message = message;
+            return this;
+        }
 
         public QuoteEventBuilder bidSize(long bidSize) {
             this.bidSize = bidSize;
@@ -95,6 +107,7 @@ public class QuoteEvent implements BusinessEvent {
 
         public QuoteEvent build() {
             return new QuoteEvent(
+                    message,
                     bidSize,
                     bidPrice,
                     askSize,
