@@ -220,7 +220,7 @@ Resources:
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource RedwineScalingGroup --region ${AWS::Region}
 
 
-  RedwineTaskDefinition:
+  RedwineTestTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       TaskRoleArn: !Ref RedwineECSTaskRole
@@ -241,13 +241,42 @@ Resources:
             SourcePath: /efs/test/redwine-1
           Name: efs-redwine-1
 
+  RedwineTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      TaskRoleArn: !Ref RedwineECSTaskRole
+      ContainerDefinitions:
+        - Name: RedwineContainer
+          Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
+          #Cpu: 20
+          MemoryReservation: 128
+          User: ec2-user
+          Environment:
+            - Name: ENV
+              Value: prod
+          MountPoints:
+            - SourceVolume: efs-redwine
+              ContainerPath: /home/ec2-user/redwine/logs
+      Volumes:
+        - Host:
+            SourcePath: /efs/prod/redwine
+          Name: efs-redwine
+
   RedwineTestService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref RedwineCluster
       DesiredCount: 1
-      TaskDefinition: !Ref RedwineTaskDefinition
+      TaskDefinition: !Ref RedwineTestTaskDefinition
       ServiceName: RedwineTest
+
+  RedwineService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref RedwineCluster
+      DesiredCount: 1
+      TaskDefinition: !Ref RedwineTaskDefinition
+      ServiceName: Redwine
 
   SNSTestTopic:
     Type: AWS::SNS::Topic
