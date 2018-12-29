@@ -210,6 +210,8 @@ Resources:
             sudo yum install -y nfs-utils
             sudo yum install -y aws-cfn-bootstrap
             mkdir /efs
+            mkdir /efs/prod
+            mkdir /efs/prod/redwine
             mkdir /efs/test
             mkdir /efs/test/redwine-1
             mkdir /efs/test/redwine-2
@@ -266,7 +268,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref RedwineCluster
-      DesiredCount: 1
+      DesiredCount: 0
       TaskDefinition: !Ref RedwineTestTaskDefinition
       ServiceName: RedwineTest
 
