@@ -238,37 +238,39 @@ public class EventsFactory {
         PositionEvent positionEvent = null;
 
         JsonArray jsonArray = document.getJsonArray("data");
-        JsonObject data = jsonArray.getJsonObject(0);
+        if(jsonArray.size() > 0) {
+            JsonObject data = jsonArray.getJsonObject(0);
 
-        PositionEvent.PositionEventBuilder builder = new PositionEvent.PositionEventBuilder();
-        builder.message(document.toString());
-        if(data.containsKey("isOpen")) {
+            PositionEvent.PositionEventBuilder builder = new PositionEvent.PositionEventBuilder();
             builder.message(document.toString());
+            if (data.containsKey("isOpen")) {
+                builder.message(document.toString());
 
-            String action = document.getString("action");
-            builder.action(action);
+                String action = document.getString("action");
+                builder.action(action);
 
-            builder.positionOpened(data.getBoolean("isOpen"));
+                builder.positionOpened(data.getBoolean("isOpen"));
 
-            JsonNumber positionMarginNumber = data.getJsonNumber("posMargin");
-            if (positionMarginNumber != null) {
-                long positionMargin = positionMarginNumber.longValue();
-                builder.positionMargin(positionMargin);
+                JsonNumber positionMarginNumber = data.getJsonNumber("posMargin");
+                if (positionMarginNumber != null) {
+                    long positionMargin = positionMarginNumber.longValue();
+                    builder.positionMargin(positionMargin);
+                }
+
+                JsonNumber positionContractsNumber = data.getJsonNumber("currentQty");
+                if (positionContractsNumber != null) {
+                    long positionContracts = positionContractsNumber.longValue();
+                    builder.positionContracts(positionContracts);
+                }
+
+                JsonNumber realisedPnlNumber = data.getJsonNumber("realisedPnl");
+                if (realisedPnlNumber != null) {
+                    long realisedPnl = realisedPnlNumber.longValue();
+                    builder.realisedPnl(realisedPnl);
+                }
+
+                positionEvent = builder.build();
             }
-
-            JsonNumber positionContractsNumber = data.getJsonNumber("currentQty");
-            if (positionContractsNumber != null) {
-                long positionContracts = positionContractsNumber.longValue();
-                builder.positionContracts(positionContracts);
-            }
-
-            JsonNumber realisedPnlNumber = data.getJsonNumber("realisedPnl");
-            if (realisedPnlNumber != null) {
-                long realisedPnl = realisedPnlNumber.longValue();
-                builder.realisedPnl(realisedPnl);
-            }
-
-            positionEvent = builder.build();
         }
 
         return new BusinessEvent[]{positionEvent};
