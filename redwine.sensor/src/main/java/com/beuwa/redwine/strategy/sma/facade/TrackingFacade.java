@@ -17,8 +17,6 @@ public class TrackingFacade extends IntegrationFacade {
     @Inject
     protected TrackingOrderStatus orderStatus;
 
-    private String direction;
-
     @Override
     public void processNewMaxTargetReach(@Observes NewMaxTargetReachedEvent newMaxTargetReachedEvent) {
         if(!propertiesFacade.isRedwineTrackingOn()) {
@@ -52,13 +50,11 @@ public class TrackingFacade extends IntegrationFacade {
 
     public void longOrder(@Observes TrackLongEntryEvent trackLongEntryEvent) {
         calculateBouncingUp();
-        direction = BUY;
         orderStatus.accepted();
     }
 
     public void shorOrder(@Observes TrackShortEntryEvent trackShortEntryEvent) {
         calculateBouncingDown();
-        direction = SELL;
         orderStatus.accepted();
     }
 
@@ -80,9 +76,9 @@ public class TrackingFacade extends IntegrationFacade {
         }
 
         if(orderStatus.isAccepted()) {
-            if(direction.compareTo(BUY) == 0) {
+            if(side.compareTo(BUY) == 0) {
                 logger.info(
-                        "Tracking Buy. bidPrice {} >= trigger {}",
+                        "Tracking - Buy. bidPrice {} >= trigger {}",
                         bidPrice,
                         triggerPrice
                 );
@@ -90,55 +86,51 @@ public class TrackingFacade extends IntegrationFacade {
                     orderStatus.filled();
                     // TODO send sns
                 }
-            } else if(direction.compareTo(SELL) == 0) {
+            } else if(side.compareTo(SELL) == 0) {
                 logger.info(
-                        "Tracking Sell. bidPrice {} <= trigger {}",
+                        "Tracking - Sell. bidPrice {} <= trigger {}",
                         askPrice,
                         triggerPrice
                 );
                 if(askPrice<=triggerPrice) {
-                    orderStatus.
-
-
-
-                            filled();
+                    orderStatus.filled();
                     // TODO send sns
                 }
             }
         }
         else if(orderStatus.isFilled()) {
-            if(direction.compareTo(BUY) == 0) {
+            if(side.compareTo(BUY) == 0) {
                 logger.info(
-                        "Tracking Buy. bidPrice {} >= takeProfit {}. bidPrice {} < stopLoss {}",
+                        "Tracking - Buy. bidPrice {} >= takeProfit {}. bidPrice {} < stopLoss {}",
                         bidPrice,
                         takeProfitPrice,
                         bidPrice,
                         stopLossPrice
                 );
                 if(bidPrice>=takeProfitPrice) {
-                    logger.info("CLOSED OK!");
+                    logger.info("Tracking - CLOSED OK!");
                     orderStatus.reset();
                     // TODO send sns
                 } else if(bidPrice<=stopLossPrice) {
-                    logger.info("CLOSED BAD!");
+                    logger.info("Tracking - CLOSED BAD!");
                     orderStatus.reset();
                     // TODO send sns
                 }
 
-            } else if(direction.compareTo(SELL) == 0) {
+            } else if(side.compareTo(SELL) == 0) {
                 logger.info(
-                        "Tracking Sell. askPrice {} <= takeProfit {}. askPrice {} > stopLoss {}",
+                        "Tracking - Sell. askPrice {} <= takeProfit {}. askPrice {} > stopLoss {}",
                         askPrice,
                         takeProfitPrice,
                         askPrice,
                         stopLossPrice
                 );
                 if(askPrice<=takeProfitPrice) {
-                    logger.info("CLOSED");
+                    logger.info("Tracking - CLOSED");
                     orderStatus.reset();
                     // TODO send sns
                 } else if(askPrice>=stopLossPrice) {
-                    logger.info("CLOSED BAD!");
+                    logger.info("Tracking - CLOSED BAD!");
                     orderStatus.reset();
                     // TODO send sns
                 }
