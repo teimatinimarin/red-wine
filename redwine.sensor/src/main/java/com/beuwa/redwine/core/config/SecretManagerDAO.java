@@ -7,7 +7,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import javax.inject.Inject;
 
 public class SecretManagerDAO {
-    private static final String ENV = System.getProperty("ENVIRONMENT");
+    private static final String ENV = System.getenv("ENVIRONMENT");
 
     @Inject
     SecretsManagerClient smClient;
