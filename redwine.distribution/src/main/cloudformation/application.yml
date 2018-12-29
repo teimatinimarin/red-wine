@@ -233,7 +233,7 @@ Resources:
           MemoryReservation: 128
           User: ec2-user
           Environment:
-            - Name: ENV
+            - Name: ENVIRONMENT
               Value: test
           MountPoints:
             - SourceVolume: efs-redwine-1
@@ -254,7 +254,7 @@ Resources:
           MemoryReservation: 128
           User: ec2-user
           Environment:
-            - Name: ENV
+            - Name: ENVIRONMENT
               Value: prod
           MountPoints:
             - SourceVolume: efs-redwine
