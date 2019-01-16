@@ -5,6 +5,12 @@ Parameters:
   ClusterSubnetA:
     Description: "AZ-A Subnet-id"
     Type: String
+  ClusterSubnetB:
+    Description: "AZ-B Subnet-id"
+    Type: String
+  ClusterSubnetC:
+    Description: "AZ-C Subnet-id"
+    Type: String
 
 Resources:
 
