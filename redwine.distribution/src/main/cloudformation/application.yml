@@ -148,7 +148,8 @@ Resources:
       ContainerDefinitions:
         - Name: RedwineWritterContainer
           Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
-          Command: ./entrypoint-sma.sh
+          Command:
+            - ./entrypoint-sma.sh
           #Cpu: 20
           MemoryReservation: 128
           User: ec2-user
