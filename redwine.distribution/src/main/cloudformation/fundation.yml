@@ -309,7 +309,7 @@ Resources:
               Version: 1
             Configuration:
               ClusterName: RedwineCluster
-              ServiceName: RedwineTest
+              ServiceName: RedwineWritter
               FileName: imagedefinitions.json
             RunOrder: 2
       ArtifactStore:
