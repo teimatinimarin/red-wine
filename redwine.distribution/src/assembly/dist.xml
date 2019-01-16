@@ -13,7 +13,11 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>src/main/scripts/entrypoint.sh</source>
+            <source>src/main/scripts/entrypoint-writter.sh</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/scripts/entrypoint-sma.sh</source>
             <outputDirectory>/</outputDirectory>
         </file>
         <file>

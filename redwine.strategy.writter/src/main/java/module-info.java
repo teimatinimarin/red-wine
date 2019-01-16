@@ -5,4 +5,5 @@ module redwine.strategy.writter {
 
     exports com.beuwa.redwine.writter.observers;
     opens com.beuwa.redwine.writter.observers;
+    opens com.beuwa.redwine.writter.utils;
 }
