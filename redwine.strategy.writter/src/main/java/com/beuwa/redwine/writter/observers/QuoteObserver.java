@@ -2,12 +2,11 @@ package com.beuwa.redwine.writter.observers;
 
 import com.beuwa.redwine.core.events.business.QuoteEvent;
 import com.beuwa.redwine.core.services.DatabaseService;
+import com.beuwa.redwine.writter.utils.WritterUtils;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 
@@ -16,7 +15,7 @@ public class QuoteObserver {
     Logger logger;
 
     @Inject
-    DatabaseService databaseService;
+    WritterUtils writterUtils;
 
     public void observe(@Observes QuoteEvent event) throws SQLException {
         logger.debug(
@@ -25,15 +24,10 @@ public class QuoteObserver {
         );
 
         long init = Instant.now().toEpochMilli();
-        Connection connection = databaseService.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT IGNORE INTO redwine.trades (epoch, message) VALUES(?, ?)");
-        long epoch = event.getEpoch();
-        preparedStatement.setLong(1, epoch);
-        preparedStatement.setString(2, event.getMessage());
-        preparedStatement.execute();
+        writterUtils.insertQuote(event.getEpoch(), event.getMessage());
         long finished = Instant.now().toEpochMilli();
-        logger.info("Took... {}", finished-init);
 
+        logger.info("Took... {}", finished-init);
     }
 }
 
