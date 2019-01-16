@@ -1,5 +1,8 @@
 {
-  "Parameters" : {"ClusterSubnetA": "subnet-01e3f3eadfdb41fc4", "ClusterSubnetB":  "subnet-0c44c9737d228de69",
-    "ClusterSubnetC": "subnet-04d9ca32a33e25d8f"
+  "Parameters" : {
+      "ClusterSubnetA": "subnet-01e3f3eadfdb41fc4",
+      "ClusterSubnetB":  "subnet-0c44c9737d228de69",
+      "ClusterSubnetC": "subnet-04d9ca32a33e25d8f",
+      "SshSecurityGroup": "sg-0109516a2ed44ae9b"
   }
 }

@@ -161,6 +161,18 @@ Resources:
       ToPort: 2049
       SourceSecurityGroupId: !GetAtt NFSSecurityGroup.GroupId
 
+  SshSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: SshSecurityGroup
+      GroupDescription: Allow ssh
+      VpcId: !Ref ClusterVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
   # Mount EFS
   MountTarget:
     Type: AWS::EFS::MountTarget
@@ -423,3 +435,5 @@ Resources:
         - !Ref ClusterSubnetA
         - !Ref ClusterSubnetB
         - !Ref ClusterSubnetC
+
+
