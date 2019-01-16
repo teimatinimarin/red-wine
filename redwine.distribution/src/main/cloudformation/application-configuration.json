@@ -1,3 +1,5 @@
 {
-  "Parameters" : {"NFS":"fs-5ff53897", "u": "redwine", "p": "fb3469e1-d869-4122-8da7-ea43798da38c"}
+  "Parameters" : {"ClusterSubnetA": "subnet-01e3f3eadfdb41fc4", "ClusterSubnetB":  "subnet-0c44c9737d228de69",
+    "ClusterSubnetC": "subnet-04d9ca32a33e25d8f"
+  }
 }
