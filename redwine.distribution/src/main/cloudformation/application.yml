@@ -2,9 +2,10 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   Creates Redwine Resources
 Parameters:
-  NFS:
-    Description: "Elastic File System Id"
+  ClusterSubnetA:
+    Description: "AZ-A Subnet-id"
     Type: String
+
 Resources:
 
   # This CloudFormation template creates:
@@ -17,95 +18,6 @@ Resources:
   # aws cloudformation create-stack --stack-name redwine-stack --capabilities CAPABILITY_NAMED_IAM  --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/application.yml --parameters ParameterKey=NFS,ParameterValue=fs-4ac84583
   # aws cloudformation update-stack --stack-name redwine-stack --capabilities CAPABILITY_NAMED_IAM  --template-body file://~/git/concepts/redwine/redwine.distribution/src/main/cloudformation/application.yml --parameters ParameterKey=NFS,ParameterValue=fs-4ac84583
   # aws cloudformation delete-stack --stack-name redwine-stack
-
-  ClusterVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/24
-      EnableDnsSupport: true   # Needed for ACS Agent and cfn-signal
-      EnableDnsHostnames: true # Needed to mount EFS
-      InstanceTenancy: default
-      Tags:
-        - Key: Name
-          Value: ClusterVPC
-
-  ClusterSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref ClusterVPC
-      CidrBlock: 10.0.0.0/24
-      AvailabilityZone: eu-west-1a
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: ClusterSubnet
-
-
-  # Internet Access
-  ClusterInternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-      - Key: Name
-        Value: ClusterInternetGateway
-  VPCInternetGatewayAssociation:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref ClusterVPC
-      InternetGatewayId: !Ref ClusterInternetGateway
-
-  # Routing
-  ClusterRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref ClusterVPC
-      Tags:
-      - Key: Name
-        Value: ClusterRouteTable
-  InternetIPv4Route:
-      Type: AWS::EC2::Route
-      DependsOn:
-      - ClusterInternetGateway
-      - VPCInternetGatewayAssociation
-      Properties:
-        RouteTableId: !Ref ClusterRouteTable
-        DestinationCidrBlock: 0.0.0.0/0
-        GatewayId: !Ref ClusterInternetGateway
-  SubnetRouteTableAssociation:
-      Type: AWS::EC2::SubnetRouteTableAssociation
-      Properties:
-        SubnetId: !Ref ClusterSubnet
-        RouteTableId: !Ref ClusterRouteTable
-
-  NFSSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: NFSSecurityGroup
-      GroupDescription: Allow ssh + nfs
-      VpcId: !Ref ClusterVPC
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22
-        CidrIp: 0.0.0.0/0
-  NFSSecurityGroupIngress:
-      Type: AWS::EC2::SecurityGroupIngress
-      DependsOn: NFSSecurityGroup
-      Properties:
-        GroupId: !Ref NFSSecurityGroup
-        IpProtocol: tcp
-        FromPort: 2049
-        ToPort: 2049
-        SourceSecurityGroupId: !GetAtt NFSSecurityGroup.GroupId
-
-  # Mount EFS
-  MountTarget:
-    Type: AWS::EFS::MountTarget
-    Properties:
-      FileSystemId: !Ref NFS
-      SubnetId: !Ref ClusterSubnet
-      SecurityGroups:
-        - !Ref NFSSecurityGroup
 
   # Roles
   RedwineECSContainerRole:
@@ -171,7 +83,7 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       VPCZoneIdentifier:
-      - !Ref ClusterSubnet
+        - !Ref ClusterSubnet
       LaunchConfigurationName: !Ref LaunchConfig
       MinSize: 1
       MaxSize: 1
@@ -211,45 +123,21 @@ Resources:
             sudo yum install -y aws-cfn-bootstrap
             mkdir /efs
             mkdir /efs/prod
-            mkdir /efs/prod/redwine
-            mkdir /efs/test
-            mkdir /efs/test/redwine-1
-            mkdir /efs/test/redwine-2
+            mkdir /efs/prod/redwine-writter
             chown -R ec2-user:ec2-user /efs
             sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 fs-4ac84583.efs.eu-west-1.amazonaws.com:/ /efs
 
             echo ECS_CLUSTER=RedwineCluster >> /etc/ecs/ecs.config
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource RedwineScalingGroup --region ${AWS::Region}
 
-
-  RedwineTestTaskDefinition:
+  RedwineWritterTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       TaskRoleArn: !Ref RedwineECSTaskRole
       ContainerDefinitions:
-        - Name: RedwineContainerTest-1
+        - Name: RedwineWritterContainer
           Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
-          #Cpu: 20
-          MemoryReservation: 128
-          User: ec2-user
-          Environment:
-            - Name: ENVIRONMENT
-              Value: test
-          MountPoints:
-            - SourceVolume: efs-redwine-1
-              ContainerPath: /home/ec2-user/redwine/logs
-      Volumes:
-        - Host:
-            SourcePath: /efs/test/redwine-1
-          Name: efs-redwine-1
-
-  RedwineTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      TaskRoleArn: !Ref RedwineECSTaskRole
-      ContainerDefinitions:
-        - Name: RedwineContainer
-          Image: 432127854945.dkr.ecr.eu-west-1.amazonaws.com/redwine
+          Command: ./entrypoint-sma.sh
           #Cpu: 20
           MemoryReservation: 128
           User: ec2-user
@@ -261,32 +149,16 @@ Resources:
               ContainerPath: /home/ec2-user/redwine/logs
       Volumes:
         - Host:
-            SourcePath: /efs/prod/redwine
+            SourcePath: /efs/prod/redwine-writter
           Name: efs-redwine
-
-  RedwineTestService:
-    Type: AWS::ECS::Service
-    Properties:
-      Cluster: !Ref RedwineCluster
-      DesiredCount: 0
-      TaskDefinition: !Ref RedwineTestTaskDefinition
-      ServiceName: RedwineTest
 
   RedwineService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref RedwineCluster
       DesiredCount: 1
-      TaskDefinition: !Ref RedwineTaskDefinition
-      ServiceName: Redwine
-
-  SNSTestTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      Subscription:
-        - Endpoint: tmarin@beuwa.com
-          Protocol: email
-      TopicName: SNSTestTopic
+      TaskDefinition: !Ref RedwineWritterTaskDefinition
+      ServiceName: RedwineWritter
 
   SNSProdTopic:
     Type: AWS::SNS::Topic
@@ -295,3 +167,28 @@ Resources:
         - Endpoint: tmarin@beuwa.com
           Protocol: email
       TopicName: SNSProdTopic
+
+  ClusterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ClusterSecurityGroup
+      GroupDescription: Allow ssh + nfs + db
+      VpcId: !Ref ClusterVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+  ClusterSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: ClusterSecurityGroup
+    Properties:
+      GroupId: !Ref ClusterSecurityGroup
+      IpProtocol: tcp
+      FromPort: 2049
+      ToPort: 2049
+      SourceSecurityGroupId: !GetAtt ClusterSecurityGroup.GroupId

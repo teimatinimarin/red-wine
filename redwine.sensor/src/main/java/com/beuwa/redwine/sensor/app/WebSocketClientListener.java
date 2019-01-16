@@ -1,8 +1,8 @@
 package com.beuwa.redwine.sensor.app;
 
 import com.beuwa.redwine.core.config.PropertiesFacade;
-import com.beuwa.redwine.sensor.utils.Signer;
-import com.beuwa.redwine.sensor.utils.SubscribeUtils;
+import com.beuwa.redwine.core.utils.Signer;
+import com.beuwa.redwine.core.utils.SubscribeUtils;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
@@ -69,7 +69,6 @@ public class WebSocketClientListener implements WebSocket.Listener {
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
         webSocket.request(1);
-        logger.debug("Last: {}, Message: {}", last, data);
         if(!last) {
             multiPart = true;
             parts.append(data.toString());

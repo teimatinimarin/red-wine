@@ -52,61 +52,27 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>2.0</version>
+            <groupId>com.beuwa</groupId>
+            <artifactId>redwine-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <!-- Generated, ManagedBean, PostConstruct, PreDestroy, Priority, Resource, Resources -->
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
+            <groupId>com.beuwa</groupId>
+            <artifactId>redwine-strategy-writter</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.13</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-se</artifactId>
             <version>2.0.7</version>
             <scope>runtime</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.11.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.11.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>core</artifactId>
-            <version>2.0.0-preview-10</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>secretsmanager</artifactId>
-            <version>2.0.0-preview-10</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sns</artifactId>
-            <version>2.0.0-preview-10</version>
         </dependency>
 
         <dependency>

@@ -3,20 +3,12 @@ package com.beuwa.redwine.sensor.app;
 import com.beuwa.redwine.core.config.PropertiesFacade;
 import com.beuwa.redwine.core.events.BootEvent;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.WebSocket;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InitializerTest {
@@ -35,6 +27,7 @@ class InitializerTest {
     @Mock
     WebSocketClientListener listener;
 
+    /*
     @Test
     void connectToServerOk() throws Exception {
         when(propertiesFacade.getWssEndpoint()).thenReturn(new URI("wss://websocket.org"));
@@ -60,4 +53,5 @@ class InitializerTest {
         verify(websocketBuilder, times(0)).buildAsync(any(URI.class), any(WebSocketClientListener.class));
         verify(mockedLatch, times(0)).await();
     }
+    */
 }
