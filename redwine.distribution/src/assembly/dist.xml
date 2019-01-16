@@ -17,7 +17,19 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
+            <source>../redwine.core/target/redwine-core-${pom.version}.jar</source>
+            <outputDirectory>bin/</outputDirectory>
+        </file>
+        <file>
             <source>../redwine.sensor/target/redwine-sensor-${pom.version}.jar</source>
+            <outputDirectory>bin/</outputDirectory>
+        </file>
+        <file>
+            <source>../redwine.strategy.sma/target/redwine-strategy-sma-${pom.version}.jar</source>
+            <outputDirectory>bin/</outputDirectory>
+        </file>
+        <file>
+            <source>../redwine.strategy.writter/target/redwine-strategy-writter-${pom.version}.jar</source>
             <outputDirectory>bin/</outputDirectory>
         </file>
     </files>

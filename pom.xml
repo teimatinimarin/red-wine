@@ -11,7 +11,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>redwine.core</module>
         <module>redwine.sensor</module>
+        <module>redwine.strategy.writter</module>
+        <module>redwine.strategy.sma</module>
         <module>redwine.distribution</module>
     </modules>
 

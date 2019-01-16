@@ -44,7 +44,7 @@
         <Logger name="com.beuwa.redwine.sensor.app.MessageProcessor" level="DEBUG" additivity="false">
             <Appender-ref ref="MessageAppender" level="DEBUG" />
         </Logger>
-        <Logger name="com.beuwa.redwine.sensor.observers" level="DEBUG" additivity="false">
+        <Logger name="com.beuwa.redwine.writter.observers" level="DEBUG" additivity="false">
             <Appender-ref ref="EventAppender" level="DEBUG" />
         </Logger>
         <Logger name="com.beuwa.redwine.strategy.sma.dao.BrokerDao" level="DEBUG" additivity="false">

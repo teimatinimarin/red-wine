@@ -1,6 +1,7 @@
 package com.beuwa.redwine.sensor.utils;
 
 import com.beuwa.redwine.core.config.PropertiesFacade;
+import com.beuwa.redwine.core.utils.Signer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

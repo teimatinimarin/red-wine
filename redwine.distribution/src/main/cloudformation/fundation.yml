@@ -5,20 +5,28 @@ Parameters:
   GithubToken:
     Description: "Github OAuth Token"
     Type: String
-Resources:
+  u:
+    Description: "DB User"
+    Type: String
+  p:
+    Description: "DB Password"
+    Type: String
 
+Resources:
   # This CloudFormation template creates:
   # 1: ECR Repository
   #    This docker repo stores redwine image
   # 2: Elastic File System
   #    Elastic File System that can be shared between multiple EC2 instances and docker containers
-  # 3: S3 Bucket
+  # 3: VPC
+  #    Networking Resources
+  # 4: S3 Bucket
   #    S3 Bucket used for CICD Pipeline
-  # 4: Code Build Project and IAM Role
+  # 5: Code Build Project and IAM Role
   #    Builds this project in AWS Code Build
-  # 5: AWS Pipeline and IAM Role
+  # 6: AWS Pipeline and IAM Role
   #    CICD AWS Pipeline for this project
-  # 6: Cloudformation Role
+  # 7: Cloudformation Role
   #    Role used for CloudFormation to create Resources as part of this CICD Pipeline
 
   # Execute this by:
@@ -36,6 +44,131 @@ Resources:
       FileSystemTags:
       - Key: Name
         Value: SensorNFS
+
+  ClusterVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true   # Needed for ACS Agent and cfn-signal
+      EnableDnsHostnames: true # Needed to mount EFS
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: ClusterVPC
+
+  ClusterSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ClusterVPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: eu-west-1a
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: ClusterSubnetA
+  ClusterSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ClusterVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: eu-west-1b
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: ClusterSubnetB
+  ClusterSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ClusterVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: eu-west-1c
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: ClusterSubnetC
+
+  # Internet Access
+  ClusterInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ClusterInternetGateway
+  VPCInternetGatewayAssociation:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ClusterVPC
+      InternetGatewayId: !Ref ClusterInternetGateway
+
+  # Routing
+  ClusterRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ClusterVPC
+      Tags:
+        - Key: Name
+          Value: ClusterRouteTable
+  InternetIPv4Route:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - ClusterInternetGateway
+      - VPCInternetGatewayAssociation
+    Properties:
+      RouteTableId: !Ref ClusterRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref ClusterInternetGateway
+  SubnetRouteTableAssociationA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ClusterSubnetA
+      RouteTableId: !Ref ClusterRouteTable
+  SubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ClusterSubnetB
+      RouteTableId: !Ref ClusterRouteTable
+  SubnetRouteTableAssociationC:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ClusterSubnetC
+      RouteTableId: !Ref ClusterRouteTable
+
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: DbSecurityGroup
+      GroupDescription: Allow db
+      VpcId: !Ref ClusterVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+
+  NFSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: NFSSecurityGroup
+      GroupDescription: Allow nfs
+      VpcId: !Ref ClusterVPC
+  NFSSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: NFSSecurityGroup
+    Properties:
+      GroupId: !Ref NFSSecurityGroup
+      IpProtocol: tcp
+      FromPort: 2049
+      ToPort: 2049
+      SourceSecurityGroupId: !GetAtt NFSSecurityGroup.GroupId
+
+  # Mount EFS
+  MountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref SensorNFS
+      SubnetId: !Ref ClusterSubnetA
+      SecurityGroups:
+        - !Ref NFSSecurityGroup
 
   RedwineS3Bucket:
     Type: AWS::S3::Bucket
@@ -225,6 +358,7 @@ Resources:
         - arn:aws:iam::aws:policy/IAMFullAccess
         - arn:aws:iam::aws:policy/AmazonECS_FullAccess
         - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+        - arn:aws:iam::aws:policy/AmazonRDSFullAccess
 
   CodePipelineWebhook:
     Type: AWS::CodePipeline::Webhook
@@ -240,3 +374,52 @@ Resources:
       Name: RedwineWebhook
       TargetPipelineVersion: !GetAtt RedwinePipeline.Version
       RegisterWithThirdParty: true
+
+  # DB
+  RDSCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      MasterUsername: !Ref u
+      MasterUserPassword: !Ref p
+      DBClusterIdentifier: redwine
+      Engine: aurora-mysql
+      DBSubnetGroupName: !Ref RedwineDBSubnetGroup
+      DBClusterParameterGroupName: default.aurora-mysql5.7
+      VpcSecurityGroupIds:
+        - !Ref DbSecurityGroup
+
+  RedwineDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBSubnetGroupName: !Ref RedwineDBSubnetGroup
+      DBParameterGroupName: default.aurora-mysql5.7
+      Engine: aurora-mysql
+      DBClusterIdentifier: !Ref RDSCluster
+      PubliclyAccessible: true
+      AvailabilityZone: eu-west-1a
+      DBInstanceClass: db.t2.small
+
+  #RDSDBInstance2:
+  #  Type: AWS::RDS::DBInstance
+  #  Properties:
+  #    DBSubnetGroupName:
+  #      Ref: DBSubnetGroup
+  #    DBParameterGroupName:
+  #      Ref: RDSDBParameterGroup
+  #    Engine: aurora
+  #    DBClusterIdentifier:
+  #      Ref: RDSCluster
+  #    PubliclyAccessible: 'true'
+  #    AvailabilityZone:
+  #      Fn::GetAtt:
+  #        - Subnet2
+  #        - AvailabilityZone
+  #    DBInstanceClass: db.r3.xlarge
+  RedwineDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Redwine DB Subnet Group"
+      SubnetIds:
+        - !Ref ClusterSubnetA
+        - !Ref ClusterSubnetB
+        - !Ref ClusterSubnetC
