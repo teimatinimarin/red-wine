@@ -11,6 +11,9 @@ Parameters:
   ClusterSubnetC:
     Description: "AZ-C Subnet-id"
     Type: String
+  SshSecurityGroup:
+    Description: "SSH Security Groups in the VPC"
+    Type: String
 
 Resources:
 
@@ -89,7 +92,9 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       VPCZoneIdentifier:
-        - !Ref ClusterSubnet
+        - !Ref ClusterSubnetA
+        - !Ref ClusterSubnetB
+        - !Ref ClusterSubnetC
       LaunchConfigurationName: !Ref LaunchConfig
       MinSize: 1
       MaxSize: 1
@@ -119,7 +124,7 @@ Resources:
       KeyName: beuwa-eu-west-1
       IamInstanceProfile: !Ref RedwineECSContainerRoleInstanceProfile
       SecurityGroups:
-        - !Ref NFSSecurityGroup
+        - !Ref SshSecurityGroup
       UserData:
         "Fn::Base64":
           !Sub |
@@ -174,27 +179,3 @@ Resources:
           Protocol: email
       TopicName: SNSProdTopic
 
-  ClusterSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: ClusterSecurityGroup
-      GroupDescription: Allow ssh + nfs + db
-      VpcId: !Ref ClusterVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 3306
-          ToPort: 3306
-          CidrIp: 0.0.0.0/0
-  ClusterSecurityGroupIngress:
-    Type: AWS::EC2::SecurityGroupIngress
-    DependsOn: ClusterSecurityGroup
-    Properties:
-      GroupId: !Ref ClusterSecurityGroup
-      IpProtocol: tcp
-      FromPort: 2049
-      ToPort: 2049
-      SourceSecurityGroupId: !GetAtt ClusterSecurityGroup.GroupId
