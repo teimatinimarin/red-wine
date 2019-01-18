@@ -141,8 +141,8 @@ Resources:
       VpcId: !Ref ClusterVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 3306
-          ToPort: 3306
+          FromPort: 5432
+          ToPort: 5432
           CidrIp: 0.0.0.0/0
 
   NFSSecurityGroup:
@@ -388,28 +388,28 @@ Resources:
       RegisterWithThirdParty: true
 
   # DB
-  RDSCluster:
-    Type: AWS::RDS::DBCluster
-    Properties:
-      MasterUsername: !Ref u
-      MasterUserPassword: !Ref p
-      DBClusterIdentifier: redwine
-      Engine: aurora-mysql
-      DBSubnetGroupName: !Ref RedwineDBSubnetGroup
-      DBClusterParameterGroupName: default.aurora-mysql5.7
-      VpcSecurityGroupIds:
-        - !Ref DbSecurityGroup
+  #RDSCluster:
+  #  Type: AWS::RDS::DBCluster
+  #  Properties:
+  #    MasterUsername: !Ref u
+  #    MasterUserPassword: !Ref p
+  #    DBClusterIdentifier: redwine
+  #    Engine: aurora-mysql
+  #    DBSubnetGroupName: !Ref RedwineDBSubnetGroup
+  #    DBClusterParameterGroupName: default.aurora-mysql5.7
+  #    VpcSecurityGroupIds:
+  #      - !Ref DbSecurityGroup
 
-  RedwineDBInstance:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBSubnetGroupName: !Ref RedwineDBSubnetGroup
-      DBParameterGroupName: default.aurora-mysql5.7
-      Engine: aurora-mysql
-      DBClusterIdentifier: !Ref RDSCluster
-      PubliclyAccessible: true
-      AvailabilityZone: eu-west-1a
-      DBInstanceClass: db.t2.small
+  #RedwineDBInstance:
+  #  Type: AWS::RDS::DBInstance
+  #  Properties:
+  #    DBSubnetGroupName: !Ref RedwineDBSubnetGroup
+  #    DBParameterGroupName: default.aurora-mysql5.7
+  #    Engine: aurora-mysql
+  #    DBClusterIdentifier: !Ref RDSCluster
+  #    PubliclyAccessible: true
+  #    AvailabilityZone: eu-west-1a
+  #    DBInstanceClass: db.t2.small
 
   #RDSDBInstance2:
   #  Type: AWS::RDS::DBInstance
@@ -427,6 +427,27 @@ Resources:
   #        - Subnet2
   #        - AvailabilityZone
   #    DBInstanceClass: db.r3.xlarge
+
+
+  # DB
+  RedwinePostgresInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: redwinedb
+      MasterUsername: !Ref u
+      MasterUserPassword: !Ref p
+      Engine: postgres
+      EngineVersion: 10.6
+      DBParameterGroupName: default.postgres10
+      AllocatedStorage: 20
+      DBSubnetGroupName: !Ref RedwineDBSubnetGroup
+      PubliclyAccessible: true
+      AvailabilityZone: eu-west-1a
+      DBInstanceClass: db.t2.micro
+      VPCSecurityGroups:
+        - !Ref DbSecurityGroup
+
+
   RedwineDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:

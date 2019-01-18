@@ -1,5 +1,6 @@
 module redwine.sensor {
     requires redwine.core;
+    requires postgresql;
 
     requires jdk.unsupported;
 
