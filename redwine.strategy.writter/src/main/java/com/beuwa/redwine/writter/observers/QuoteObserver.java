@@ -1,7 +1,6 @@
 package com.beuwa.redwine.writter.observers;
 
 import com.beuwa.redwine.core.events.business.QuoteEvent;
-import com.beuwa.redwine.core.services.DatabaseService;
 import com.beuwa.redwine.writter.utils.WritterUtils;
 import org.apache.logging.log4j.Logger;
 

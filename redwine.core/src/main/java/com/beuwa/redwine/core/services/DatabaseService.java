@@ -12,7 +12,7 @@ public class DatabaseService {
 
     public Connection getConnection() throws SQLException {
         if(null == connection) {
-            connection = DriverManager.getConnection("jdbc:mysql://redwine.cluster-cwzeacqdfykx.eu-west-1.rds.amazonaws.com:3306", "redwine", "1122334455");
+            connection = DriverManager.getConnection("jdbc:postgresql://fr1hm4v7whgtd1a.cwzeacqdfykx.eu-west-1.rds.amazonaws.com:5432/fr1hm4v7whgtd1a", "redwine", "1122334455");
         }
 
         return connection;
