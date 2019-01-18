@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class WritterUtils {
-    private final static String QUERY = "INSERT INTO redwine.quotes (epoch, message) VALUES(?, ?) ON CONFLICT DO NOTHING";
+    private final static String QUERY = "INSERT INTO redwine.quotes (epoch, message) VALUES(?, ?::json) ON CONFLICT DO NOTHING";
 
     @Inject
     DatabaseService databaseService;
