@@ -96,18 +96,12 @@ public class EventsFactory {
         JsonArray jsonArray = document.getJsonArray("data");
         JsonObject data = jsonArray.getJsonObject( jsonArray.size() -1 );
 
-        String side = data.getString("side");
-        JsonNumber priceNumber = data.getJsonNumber("price");
-        long price = priceNumber.bigDecimalValue().multiply(ONE_HUNDRED).longValue();
-        long grossValue = data.getJsonNumber("grossValue").longValue();
-        long foreignNotional = data.getJsonNumber("foreignNotional").longValue();
+        String timestamp = data.getString("timestamp");
+        long epoch = Instant.parse(timestamp).toEpochMilli();
 
         TradeEvent tradeEvent = new TradeEvent.TradeEventBuilder()
                 .message(document.toString())
-                .side( side )
-                .price( price )
-                .grossValue( grossValue )
-                .foreignNotional( foreignNotional )
+                .epoch(epoch)
                 .build();
 
         return new BusinessEvent[]{tradeEvent};
