@@ -33,6 +33,7 @@ public class PropertiesFactory {
                     .eventQuoteEnable(Boolean.valueOf(jsonObject.getString("event.quote.enable")))
                     .eventTradeEnable(Boolean.valueOf(jsonObject.getString("event.trade.enable")))
                     .eventWalletEnable(Boolean.valueOf(jsonObject.getString("event.wallet.enable")))
+                    .eventOrderbookEnable(Boolean.valueOf(jsonObject.getString("event.orderbook.enable")))
                     .build();
         }
     }

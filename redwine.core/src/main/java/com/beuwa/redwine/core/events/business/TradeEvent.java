@@ -53,9 +53,23 @@ public class TradeEvent implements BusinessEvent {
     // When did the event happened
     private long epoch;
 
-    private TradeEvent(String message, long epoch) {
+    private double price;
+
+    private long size;
+
+    private double homeNotional;
+
+    private TradeEvent(
+            String message,
+            long epoch,
+            double price,
+            long size,
+            double homeNotional) {
         this.message = message;
         this.epoch = epoch;
+        this.price = price;
+        this.size = size;
+        this.homeNotional = homeNotional;
     }
 
     public String getMessage() {
@@ -66,9 +80,24 @@ public class TradeEvent implements BusinessEvent {
         return epoch;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public double getHomeNotional() {
+        return homeNotional;
+    }
+
     public static class TradeEventBuilder {
         private String message;
         private long epoch;
+        private double price;
+        private long size;
+        private double homenotional;
 
         public TradeEventBuilder message(String message) {
             this.message = message;
@@ -80,10 +109,28 @@ public class TradeEvent implements BusinessEvent {
             return this;
         }
 
+        public TradeEventBuilder price(double price) {
+            this.price = price;
+            return this;
+        }
+
+        public TradeEventBuilder size(long size) {
+            this.size = size;
+            return this;
+        }
+
+        public TradeEventBuilder homenotional(double homenotional) {
+            this.homenotional = homenotional;
+            return this;
+        }
+
         public TradeEvent build() {
             return new TradeEvent(
                     message,
-                    epoch
+                    epoch,
+                    price,
+                    size,
+                    homenotional
             );
         }
     }

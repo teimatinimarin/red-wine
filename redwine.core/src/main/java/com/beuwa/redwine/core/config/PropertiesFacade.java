@@ -97,6 +97,10 @@ public class PropertiesFacade {
         return properties.isEventWalletEnable();
     }
 
+    public boolean isOrderbookEnable() {
+        return properties.isOrderbookEnable();
+    }
+
     public String getLeverage() {
         return properties.getLeverage();
     }
