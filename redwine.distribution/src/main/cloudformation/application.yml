@@ -168,7 +168,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref RedwineCluster
-      DesiredCount: 1
+      DesiredCount: 0
       TaskDefinition: !Ref RedwineWritterTaskDefinition
       ServiceName: RedwineWritter
 
