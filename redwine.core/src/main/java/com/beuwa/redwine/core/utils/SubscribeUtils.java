@@ -40,6 +40,10 @@ public class SubscribeUtils {
             subscribe.add("\"wallet\"");
         }
 
+        if(propertiesFacade.isOrderbookEnable()) {
+            subscribe.add("\"orderBookL2_25:XBTUSD\"");
+        }
+
         return subscribe.toString();
     }
 }

@@ -44,6 +44,9 @@ public class EventsFactory {
                     case "position":
                         events = createPositionEvent(jsonObject);
                         break;
+                    case "orderBookL2_25":
+                        events = createOrderbookEvent(jsonObject);
+                        break;
                     default:
                 }
             }
@@ -272,6 +275,11 @@ public class EventsFactory {
         }
 
         return new BusinessEvent[]{positionEvent};
+    }
+
+    private BusinessEvent[] createOrderbookEvent(JsonObject document) {
+        OrderbookEvent orderbookEvent = new OrderbookEvent(document.toString());
+        return new BusinessEvent[]{orderbookEvent};
     }
 
     private boolean valid(JsonObject data, String key) {

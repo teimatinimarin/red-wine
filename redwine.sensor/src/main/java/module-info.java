@@ -13,5 +13,5 @@ module redwine.sensor {
     // Temporal for junit in intellij
     opens com.beuwa.redwine.sensor;
     opens com.beuwa.redwine.sensor.app;
-    opens com.beuwa.redwine.sensor.producers;
+
 }

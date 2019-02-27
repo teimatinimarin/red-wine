@@ -39,5 +39,6 @@ class PropertiesFactoryTest {
         assertEquals(true, properties.isEventQuoteEnable());
         assertEquals(true, properties.isEventTradeEnable());
         assertEquals(true, properties.isEventWalletEnable());
+        assertEquals(true, properties.isOrderbookEnable());
     }
 }

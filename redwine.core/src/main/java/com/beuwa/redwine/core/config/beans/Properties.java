@@ -21,6 +21,7 @@ public class Properties {
     private boolean eventQuoteEnable;
     private boolean eventTradeEnable;
     private boolean eventWalletEnable;
+    private boolean orderbookEnable;
 
     private Properties(String endpoint,
                        String apiKey,
@@ -41,7 +42,8 @@ public class Properties {
                        boolean eventPositionEnable,
                        boolean eventQuoteEnable,
                        boolean eventTradeEnable,
-                       boolean eventWalletEnable) {
+                       boolean eventWalletEnable,
+                       boolean orderbookEnable) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
@@ -62,6 +64,7 @@ public class Properties {
         this.eventQuoteEnable = eventQuoteEnable;
         this.eventTradeEnable = eventTradeEnable;
         this.eventWalletEnable = eventWalletEnable;
+        this.orderbookEnable = orderbookEnable;
     }
 
     public String getEndpoint() {
@@ -144,6 +147,10 @@ public class Properties {
         return eventWalletEnable;
     }
 
+    public boolean isOrderbookEnable() {
+        return orderbookEnable;
+    }
+
     public static class PropertiesBuilder {
         private String endpoint;
         private String apiKey;
@@ -165,7 +172,7 @@ public class Properties {
         private boolean eventQuoteEnable;
         private boolean eventTradeEnable;
         private boolean eventWalletEnable;
-
+        private boolean eventOrderbookEnable;
 
         public PropertiesBuilder endpoint(String endpoint) {
             this.endpoint = endpoint;
@@ -267,6 +274,11 @@ public class Properties {
             return this;
         }
 
+        public PropertiesBuilder eventOrderbookEnable(boolean orderbookEnable) {
+            this.eventOrderbookEnable = orderbookEnable;
+            return this;
+        }
+
         public Properties build() {
             return new Properties(
                     this.endpoint,
@@ -288,7 +300,8 @@ public class Properties {
                     this.eventPositionEnable,
                     this.eventQuoteEnable,
                     this.eventTradeEnable,
-                    this.eventWalletEnable
+                    this.eventWalletEnable,
+                    this.eventOrderbookEnable
             );
         }
     }

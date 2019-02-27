@@ -27,6 +27,7 @@ module redwine.core {
     exports com.beuwa.redwine.core.events.business;
     exports com.beuwa.redwine.core.services;
     exports com.beuwa.redwine.core.utils; // TODO: Internal Utils?
+    exports com.beuwa.redwine.core.model;
 
     opens com.beuwa.redwine.core.config;
     opens com.beuwa.redwine.core.config.beans;
@@ -34,4 +35,7 @@ module redwine.core {
     opens com.beuwa.redwine.core.events.business;
     opens com.beuwa.redwine.core.services;
     opens com.beuwa.redwine.core.utils;
+
+    opens com.beuwa.redwine.core.producers;
+    opens com.beuwa.redwine.core.model;
 }

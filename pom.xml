@@ -16,6 +16,7 @@
         <module>redwine.strategy.writter</module>
         <module>redwine.strategy.sma</module>
         <module>redwine.distribution</module>
+        <module>redwine.strategy.rollercoaster</module>
     </modules>
 
     <properties>

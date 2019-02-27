@@ -23,7 +23,8 @@
             </Policies>
         </RollingFile>
         <RollingFile name="RedwineAppender" fileName="./logs/redwine.log" filePattern="./logs/redwine-%d{yyyy-MM-dd}.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" />
+            <!--PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" /-->
+            <PatternLayout pattern="%msg%n" />
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true" />
             </Policies>

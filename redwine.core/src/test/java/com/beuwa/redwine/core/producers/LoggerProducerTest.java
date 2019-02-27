@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.producers;
+package com.beuwa.redwine.core.producers;
 
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;

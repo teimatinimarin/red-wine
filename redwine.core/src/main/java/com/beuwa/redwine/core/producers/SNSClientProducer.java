@@ -1,4 +1,4 @@
-package com.beuwa.redwine.sensor.producers;
+package com.beuwa.redwine.core.producers;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sns.SNSClient;
