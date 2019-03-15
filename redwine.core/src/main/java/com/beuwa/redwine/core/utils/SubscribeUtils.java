@@ -41,7 +41,7 @@ public class SubscribeUtils {
         }
 
         if(propertiesFacade.isOrderbookEnable()) {
-            subscribe.add("\"orderBookL2_25:XBTUSD\"");
+            subscribe.add("\"orderBookL2:XBTUSD\"");
         }
 
         return subscribe.toString();

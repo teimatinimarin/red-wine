@@ -1,6 +1,7 @@
 package com.beuwa.redwine.strategy.rollercoaster.statistics;
 
 import com.beuwa.redwine.core.events.business.TradeEvent;
+import com.beuwa.redwine.core.model.Trade;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
@@ -21,7 +22,7 @@ public class WindowMap extends TreeMap<Long, TickSummary> {
         this.window = window;
     }
 
-    public TickSummary put(Long epoch, TradeEvent trade) {
+    public TickSummary put(Long epoch, Trade trade) {
         TickSummary tickSummary = super.get(epoch);
         if(tickSummary == null) {
             tickSummary = new TickSummary();

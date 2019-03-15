@@ -14,4 +14,5 @@ module redwine.strategy.rollercoaster {
     opens com.beuwa.redwine.strategy.rollercoaster.strategy;
     opens com.beuwa.redwine.strategy.rollercoaster.utils;
     opens com.beuwa.redwine.strategy.rollercoaster.statistics;
+    opens com.beuwa.redwine.strategy.rollercoaster.observers;
 }

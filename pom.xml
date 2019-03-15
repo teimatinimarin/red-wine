@@ -15,8 +15,8 @@
         <module>redwine.sensor</module>
         <module>redwine.strategy.writter</module>
         <module>redwine.strategy.sma</module>
-        <module>redwine.distribution</module>
         <module>redwine.strategy.rollercoaster</module>
+        <module>redwine.distribution</module>
     </modules>
 
     <properties>

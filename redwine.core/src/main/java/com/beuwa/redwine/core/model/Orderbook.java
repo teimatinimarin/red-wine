@@ -8,7 +8,7 @@ public class Orderbook {
     private Map<Long, OrderbookEntry> bids = new TreeMap<>();
     private Map<Long, OrderbookEntry> asks = new TreeMap<>();
 
-    private Orderbook(String action) {
+    public Orderbook(String action) {
         this.action = action;
     }
 
@@ -30,21 +30,6 @@ public class Orderbook {
 
     public Map<Long, OrderbookEntry> getAsks() {
         return asks;
-    }
-
-    public static class OrderbookL2Builder {
-        private String action;
-
-        public OrderbookL2Builder action(String action) {
-            this.action = action;
-            return this;
-        }
-
-        public Orderbook build() {
-            return new Orderbook(
-                    action
-            );
-        }
     }
 }
 

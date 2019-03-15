@@ -61,6 +61,11 @@
             <artifactId>redwine-strategy-writter</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.beuwa</groupId>
+            <artifactId>redwine-strategy-rollercoaster</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->

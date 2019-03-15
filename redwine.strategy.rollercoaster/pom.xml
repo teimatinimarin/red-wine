@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>redwine.strategy.rollercoaster</artifactId>
+    <artifactId>redwine-strategy-rollercoaster</artifactId>
 
     <dependencies>
         <dependency>
