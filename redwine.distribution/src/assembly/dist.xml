@@ -36,6 +36,10 @@
             <source>../redwine.strategy.writter/target/redwine-strategy-writter-${pom.version}.jar</source>
             <outputDirectory>bin/</outputDirectory>
         </file>
+        <file>
+            <source>../redwine.strategy.rollercoaster/target/redwine-strategy-rollercoaster-${pom.version}.jar</source>
+            <outputDirectory>bin/</outputDirectory>
+        </file>
     </files>
     <fileSets>
         <fileSet>

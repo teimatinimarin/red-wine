@@ -9,7 +9,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 public class LoggerProducer {
     @Produces
     Logger createLogger(InjectionPoint injectionPoint) {
-        return LogManager.getLogger( injectionPoint.getMember().getDeclaringClass().getName() );
-        //return LogManager.getFormatterLogger( injectionPoint.getMember().getDeclaringClass().getName() );
+        //return LogManager.getLogger( injectionPoint.getMember().getDeclaringClass().getName() );
+        return LogManager.getFormatterLogger( injectionPoint.getMember().getDeclaringClass().getName() );
     }
 }

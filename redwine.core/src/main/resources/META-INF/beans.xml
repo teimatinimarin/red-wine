@@ -10,5 +10,7 @@
         <exclude name="com.beuwa.redwine.core.events.business.*" />
         <exclude name="com.beuwa.redwine.core.model.Orderbook" />
         <exclude name="com.beuwa.redwine.core.model.OrderbookEntry" />
+        <exclude name="com.beuwa.redwine.core.model.Trade" />
+        <exclude name="com.beuwa.redwine.core.model.Trades" />
     </scan>
 </beans>

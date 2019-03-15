@@ -1,6 +1,6 @@
 package com.beuwa.redwine.strategy.rollercoaster.strategy;
 
-import com.beuwa.redwine.core.events.business.TradeEvent;
+import com.beuwa.redwine.core.model.Trade;
 import com.beuwa.redwine.core.services.DatabaseService;
 import com.beuwa.redwine.strategy.rollercoaster.sampler.SamplerEvent;
 import com.beuwa.redwine.strategy.rollercoaster.statistics.TickSummary;
@@ -87,7 +87,7 @@ public class DataTaker {
         long size = Long.parseLong(values[5]);
         double homenotional = Double.parseDouble(values[6]);
 
-        TradeEvent trade = new TradeEvent.TradeEventBuilder()
+        Trade trade = new Trade.TradeEventBuilder()
                 .epoch(epoch)
                 .price(price)
                 .size(size)

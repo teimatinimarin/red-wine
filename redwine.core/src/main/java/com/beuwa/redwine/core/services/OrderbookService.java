@@ -6,12 +6,14 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Arrays;
 
 @Singleton
 public class OrderbookService {
     @Inject
     private Logger logger;
 
+    private boolean inited;
     private Orderbook orderbook;
 
     public void process(Orderbook orderbook) {
@@ -32,34 +34,53 @@ public class OrderbookService {
             default:
                 logger.info("WHATTTTT!! action +> %s", action);
         }
-
-        print();
     }
 
-    private void print() {
-        logger.info("");
-        logger.info("");
+    public void print(int deep) {
         OrderbookEntry[] bids = orderbook.getBids().values().toArray(OrderbookEntry[]::new);
         OrderbookEntry[] asks = orderbook.getAsks().values().toArray(OrderbookEntry[]::new);
+
+        print(
+                Arrays.copyOfRange(bids, 0, deep),
+                Arrays.copyOfRange(asks, asks.length - deep, asks.length)
+        );
+    }
+
+    private void print(OrderbookEntry[] bids, OrderbookEntry[] asks) {
+        logger.info("");
+        logger.info("");
         int bidsDeep = bids.length;
         int asksDeep = asks.length;
-        for(int i = 0; i < asksDeep; i++) {
-            OrderbookEntry ask = asks[i];
+        double bidPrice = 0, askPrice =0;
+        int bidSize = 0, askSize = 0;
+        int bidVolume = 0, askVolume = 0;
+        for(int bidI = 0, askI = asksDeep; bidI < bidsDeep || askI > 0; bidI++, askI--) {
+
+            if(bidI + 1 <= bidsDeep) {
+                OrderbookEntry bid = bids[bidI];
+                bidPrice = bid.getPrice() / 100D;
+                bidSize = bid.getSize();
+                bidVolume += bid.getSize();
+            }
+            if(asksDeep - askI >= 0) {
+                OrderbookEntry ask = asks[askI - 1];
+                askPrice = ask.getPrice()/100D;
+                askSize =  ask.getSize();
+                askVolume += ask.getSize();
+            }
+
             logger.info(
-                    "%.2f    %d  %,d",
-                    ask.getPrice()/100D,
-                    ask.getSize(),
-                    ask.getSize()
-            );
-        }
-        logger.info("=====>%d - %d<=====", bidsDeep, asksDeep);
-        for(int i = 0; i < bidsDeep; i++) {
-            OrderbookEntry bid = bids[i];
-            logger.info(
-                    "%.2f   %d  %,d",
-                    bid.getPrice()/100D,
-                    bid.getSize(),
-                    bid.getSize()
+                    "%2d/%2d\t%.2f\t%,11d\t%,11d\t=>|<=\t%2d/%2d\t%.2f\t%,11d\t%,11d",
+                    bidI+1,
+                    bidsDeep,
+                    bidPrice,
+                    bidSize,
+                    bidVolume,
+                    askI,
+                    asksDeep,
+                    askPrice,
+                    askSize,
+                    askVolume
             );
         }
     }
@@ -75,6 +96,7 @@ public class OrderbookService {
     }
 
     private void initOrderbook(Orderbook orderbook) {
+        this.inited = true;
         this.orderbook = orderbook;
     }
 
@@ -123,5 +145,9 @@ public class OrderbookService {
                 .forEach(orderbookEntry -> {
                     this.orderbook.getAsks().remove(orderbookEntry.getId());
                 });
+    }
+
+    public boolean isInited() {
+        return inited;
     }
 }

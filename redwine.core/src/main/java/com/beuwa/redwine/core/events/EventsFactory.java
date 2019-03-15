@@ -44,7 +44,7 @@ public class EventsFactory {
                     case "position":
                         events = createPositionEvent(jsonObject);
                         break;
-                    case "orderBookL2_25":
+                    case "orderBookL2":
                         events = createOrderbookEvent(jsonObject);
                         break;
                     default:

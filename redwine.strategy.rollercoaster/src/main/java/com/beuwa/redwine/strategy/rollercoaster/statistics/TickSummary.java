@@ -1,6 +1,6 @@
 package com.beuwa.redwine.strategy.rollercoaster.statistics;
 
-import com.beuwa.redwine.core.events.business.TradeEvent;
+import com.beuwa.redwine.core.model.Trade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,9 @@ public class TickSummary {
     private double firstPrice;
     private double lastPrice;
     private long volume;
-    private List<TradeEvent> events = new ArrayList<>();
+    private List<Trade> events = new ArrayList<>();
 
-    public void put(long epoch, TradeEvent trade) {
+    public void put(long epoch, Trade trade) {
         events.add(trade);
         this.count++;
         this.epoch = epoch;
@@ -44,7 +44,7 @@ public class TickSummary {
         return volume;
     }
 
-    public List<TradeEvent> getEvents() {
+    public List<Trade> getEvents() {
         return events;
     }
 }
